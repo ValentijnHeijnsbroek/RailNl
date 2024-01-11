@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 class RailNL():
     def __init__(self):
         self.stations = []
-    
+        self.score = 10
+
     def load_stations(self, station_filename):
         with open(station_filename, 'r') as file:
             reader = csv.reader(file)
@@ -49,7 +50,9 @@ class RailNL():
         # Plot connections
         for station in self.stations:
             for connected_station, duration in station.connections.items():
-                plt.plot([station.x, connected_station.x], [station.y, connected_station.y], color='gray', linestyle='dashed')
+                plt.plot([station.x, connected_station.x], [station.y, connected_station.y], color='gray', linestyle='solid')
+
+        
 
         plt.title('Rail Network')
         plt.xlabel('Longitude')
@@ -57,6 +60,14 @@ class RailNL():
         plt.grid(False)
         plt.show()
 
+
+    def get_score(self):
+        sum_min = 0 # Min het aantal minuten in alle trajecten samen.
+        p = 0 # de fractie van de bereden verbindingen (dus tussen 0 en 1)
+        T = 0 #het aantal trajecten
+        K = p*10000 - (T*100 + sum_min)
+        return K
+    
     def print_output(self, output_filename):
         with open(output_filename, 'w', newline='') as file:
             writer = csv.writer(file)
@@ -65,11 +76,10 @@ class RailNL():
                 train_name = f'train_{i}'
                 stations_list = [station.name for station in self.stations]
                 writer.writerow([train_name, str(stations_list)])
-            writer.writerow()
+            writer.writerow((['score', self.score]))
 
 test = RailNL()
-test.load_stations('StationsNationaal.csv')
-test.load_connections('ConnectiesNationaal.csv')
-
-test.plot_network()
+test.load_stations('StationsHolland.csv')
+test.load_connections('ConnectiesHolland.csv')
+# test.plot_network()
 test.print_output("outputtest.csv")
