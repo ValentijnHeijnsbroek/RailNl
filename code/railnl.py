@@ -9,6 +9,7 @@ class RailNL():
         self.stations = []
         self.score = 10
         self.trajecten = []
+        self.total_connections = 0
 
     def load_stations(self, station_filename):
         with open(station_filename, 'r') as file:
@@ -25,11 +26,13 @@ class RailNL():
         with open(connection_filename, 'r') as file:
             reader = csv.reader(file)
             header = next(reader)
-
+            
             for row in reader:
+                self.total_connections += 1
                 station_data = row[0]
                 connection_data = row[1]
                 duration_data = float(row[2])
+                
 
                 connected_stations = []
                 connected_stations.append((row[0], row[1]))
@@ -64,8 +67,12 @@ class RailNL():
     # Calculates and returns score.
     def get_score(self):
         sum_min = 0 # Min het aantal minuten in alle trajecten samen.
-        p = 0 # de fractie van de bereden verbindingen (dus tussen 0 en 1)
-        T = 0 #het aantal trajecten
+        bereden_trajecten = 0
+        for i in range(len(self.trajecten)):
+            sum_min += self.trajecten[i].calculate_duration()       # Berekent per traject de duration
+            bereden_trajecten += len(self.trajecten[i].stations)    # Bekijkt per traject  hoeveel verbindingen er worden gelezen (Dit zorgt er alleen nog voor dat verbindingen dubbelgeteld kunnen worden)
+        p = self.total_connections # de fractie van de bereden verbindingen (dus tussen 0 en 1)
+        T = len(self.trajecten) #het aantal trajecten
         K = p*10000 - (T*100 + sum_min)
         return K
     
@@ -123,3 +130,4 @@ random = test.stations[10]
 test.add_station_to_traject(alkmaar, 0)
 test.add_station_to_traject(random, 0)
 print(test.trajecten[0].calculate_duration())
+test.get_score()
