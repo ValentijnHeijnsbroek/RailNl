@@ -4,7 +4,8 @@ class Station:
         self.name = name
         self.x = x
         self.y = y
-        self.connections = {}
+
+        # self.connections = {}
 
     def has_connection(self, station):
         return station in self.connections
