@@ -1,7 +1,6 @@
 from station import Station
 from traject import Traject
 from connections import Connections
-
 import csv
 import os
 import matplotlib.pyplot as plt
@@ -10,9 +9,8 @@ class RailNL():
     def __init__(self):
         self.stations = []
         self.stations_connections = {}
-        self.stations_names = []
         self.score = 10
-        self.connections_distance = Connections()
+        self.connections = Connections()
         self.trajecten = []
 
     def load_stations(self, station_filename):
@@ -31,11 +29,7 @@ class RailNL():
                 x = float(row[2])
                 station = Station(name, x, y)
 
-                self.stations_names.append(name)
-
                 self.stations.append(station)
-        for i in range(0, len(self.stations_names)):
-            self.stations_connections[self.stations[i]] = []
 
     def load_connections(self, connection_filename):
         """
@@ -48,7 +42,6 @@ class RailNL():
         with open(connection_filename, 'r') as file:
             reader = csv.reader(file)
             header = next(reader)
-            
             for row in reader:
                 station_data = row[0]
                 connection_data = row[1]
@@ -57,57 +50,39 @@ class RailNL():
 
                 connected_stations = []
                 connected_stations.append((row[0], row[1]))
-                self.connections_distance.add_connection(station_data, connection_data, duration_data)
+
+                self.connections.add_connection(station_data, connection_data, duration_data)
 
                 for station in self.stations:
                     if station.name == station_data:
                         starting_connection = station
-
+                        print(station)
+                        
                         # name_1 = station_data
 
                     if station.name == connection_data:
                         ending_connection = station
 
                         # name_2 = connection_data
+                starting_connection.connections.append(ending_connection)
+                starting_connection.connections_durations[ending_connection] = duration_data
 
+                ending_connection.connections.append(starting_connection)
+                ending_connection.connections_durations[starting_connection] = duration_data
+                
                 # check the connections 
-                self.stations_connections[starting_connection].append(ending_connection)
-                self.stations_connections[ending_connection].append(starting_connection)
-    
-    # def load_stations(self, station_filename):
-    #     with open(station_filename, 'r') as file:
-    #         reader = csv.reader(file)
-    #         header = next(reader)  # Skip the header row if it exists
-    #         for row in reader:
-    #             name = row[0]
-    #             y = float(row[1])
-    #             x = float(row[2])
-    #             station = Station(name, x, y)
-    #             self.stations.append(station)
-
-    # def load_connections(self, connection_filename):
-    #     with open(connection_filename, 'r') as file:
-    #         reader = csv.reader(file)
-    #         header = next(reader)
-            
-    #         for row in reader:
-    #             self.total_connections += 1
-    #             station_data = row[0]
-    #             connection_data = row[1]
-    #             duration_data = float(row[2])
                 
-
-    #             connected_stations = []
-    #             connected_stations.append((row[0], row[1]))
-
-    #             for station in self.stations:
-    #                 if station.name == station_data:
-    #                     starting_connection = station
-    #                 if station.name == connection_data:
-    #                     ending_connection = station
+                # self.stations_connections[starting_connection].append(ending_connection)
+                # self.stations_connections[ending_connection].append(starting_connection)
                 
-    #             starting_connection.connections[ending_connection] = duration_data
-    #             ending_connection.connections[starting_connection] = duration_data
+                # print(self.stations_connections)
+
+        # using the name of the station to get the station variable 
+    def get_station_by_name(self, station_name):
+        for station in self.stations:
+            if station.name == station_name:
+                return station
+        return None
     
     def plot_network(self):
         plt.figure(figsize=(8, 8))
@@ -128,6 +103,9 @@ class RailNL():
 
     # Calculates and returns score.
     def get_score(self):
+        """
+        Calculates the K score as defined on the case website, returns an integer
+        """
         sum_min = 0 # Min het aantal minuten in alle trajecten samen.
         bereden_trajecten = 0
         for i in range(len(self.trajecten)):
@@ -136,41 +114,31 @@ class RailNL():
         p = self.total_connections # de fractie van de bereden verbindingen (dus tussen 0 en 1)
         T = len(self.trajecten) #het aantal trajecten
         K = p*10000 - (T*100 + sum_min)
-        return K
+        return sum_min
     
-    def create_traject(self, start_station_name):
+    def create_traject(self):
         """
-        Here the traject class is used to create a traject with the station variables by picking the
-        first station variable that the station is connected to inside of the dictionary value.
-        It stops when the traject has 7 stations  
+        Create a empty traject
         """
-        start_station = self.get_station_by_name(start_station_name)
         traject = Traject()
-        traject.add_station_to_traject(start_station, self.stations_connections)
-
-        while (len(traject.traject_stations) < 7):
-
-            # get the recently added station and search for the connections
-            current_station = traject.traject_stations[-1]
-            connected_stations = self.stations_connections.get(current_station, [])
-
-            if not connected_stations:
-                break
-
-            next_station = connected_stations[0]
-            traject.add_station_to_traject(next_station, self.stations_connections)
-
         # append the traject into the trajecten list
         self.trajecten.append(traject)
+        
         return traject
+    
+    def sum_time(self):
+        traject = self.trajecten[0]
+        duration = 0
 
+        for i in range(len(traject.traject_stations) - 1):
+            station1 = traject.traject_stations[i]
+            station2 = traject.traject_stations[i + 1]
+            connection_key = (station1, station2)
 
-    # using the name of the station to get the station variable 
-    def get_station_by_name(self, station_name):
-        for station in self.stations:
-            if station.name == station_name:
-                return station
-        return None
+            if self.connections_time[connection_key]:
+                duration += self.connections_time[connection_key]
+                # print(duration)
+        return duration
 
     # Prints example output
     def print_output(self, output_filename):
@@ -183,25 +151,6 @@ class RailNL():
                 writer.writerow([train_name, str(stations_list)])
             writer.writerow((['score', self.score]))
     
-    # Creates a new traject
-    # def create_traject(self):
-    #     traject = Traject()
-    #     self.trajecten.append(traject)
-
-    # # Adds station object to existing traject
-    # def add_station_to_traject(self, station, traject_index):
-    #     if len(self.trajecten[traject_index].stations) == 0:
-    #         self.trajecten[traject_index].add_station(station)
-    #         print("first station added to traject")
-
-    #     # Checks if traject index is in range, and if the station has a connection with the station in the traject
-    #     elif traject_index < len(self.trajecten) and self.trajecten[traject_index].stations[-1].has_connection(station):
-    #         print("Has connection and in index")
-    #         traject = self.trajecten[traject_index]
-    #         traject.add_station(station)
-
-    #     else:
-    #         print("Error")
 
 
 # Get the current directory of the script
@@ -213,23 +162,28 @@ data_directory = os.path.join(parent_directory, 'data')  # Change 'data' to the 
 # Set the working directory to the data directory
 os.chdir(data_directory)
 
-test = RailNL()
-test.load_stations('StationsHolland.csv')
-test.load_connections('ConnectiesHolland.csv')
-# test.plot_network()
-test.print_output("outputtest.csv")
 
+# start_station_names = ['Alkmaar']
 
-start_station_names = ['Amsterdam Amstel', 'Rotterdam Centraal']
+# for start_station_name in start_station_names:
+#     traject = test.create_traject(start_station_name)
+#     print(f'Traject stations for {start_station_name}: {traject.traject_stations}')
+# time = test.sum_time()
+# print(time)
 
-for start_station_name in start_station_names:
-    traject = test.create_traject(start_station_name)
-    print(f'Traject stations for {start_station_name}: {traject.traject_stations}')
-
-# alkmaar = test.stations[0]
-# random = test.stations[10]
-
-# test.add_station_to_traject(alkmaar, 0)
-# test.add_station_to_traject(random, 0)
-# print(test.trajecten[0].calculate_duration())
-# test.get_score()
+if __name__ == '__main__':
+    NoordHolland = RailNL()
+    NoordHolland.load_stations('StationsHolland.csv')
+    NoordHolland.load_connections('ConnectiesHolland.csv')
+    NoordHolland.create_traject()
+    print(NoordHolland.trajecten[0])
+    first = NoordHolland.trajecten[0]
+    Alkmaar = NoordHolland.stations[0]
+    first.add_station_to_traject(Alkmaar)
+    Hoorn = NoordHolland.get_station_by_name("Hoorn")
+    first.add_station_to_traject(Hoorn)
+    print(Hoorn.connections_durations)
+    # Delft = NoordHolland.get_station_by_name("Delft")
+    # first.add_station_to_traject(Delft)
+    # print(first.traject_stations)
+    # print(first.traject_stations)

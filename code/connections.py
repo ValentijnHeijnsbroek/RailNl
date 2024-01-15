@@ -8,7 +8,7 @@ class Connections:
     def add_connection(self, station1, station2, duration):
         """
         Here the connections dictionary is used to create a key tuple where the values
-         are station 1 and station 2, and the value is the duration of ggetting from station(1/2)
+         are station 1 and station 2, and the value is the duration of getting from station(1/2)
          to station(2/1)
         """
         self.connections[(station1, station2)] = duration
