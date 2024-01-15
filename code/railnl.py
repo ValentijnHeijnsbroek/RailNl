@@ -56,7 +56,7 @@ class RailNL():
                 for station in self.stations:
                     if station.name == station_data:
                         starting_connection = station
-                        print(station)
+                        
                         
                         # name_1 = station_data
 
