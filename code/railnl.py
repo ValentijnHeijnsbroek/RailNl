@@ -9,6 +9,7 @@ class RailNL():
     def __init__(self):
         self.stations = []
         self.stations_connections = {}
+        self.amount_of_connections = 0
         self.score = 10
         self.trajecten = {}
 
@@ -62,6 +63,7 @@ class RailNL():
                 if starting_connection and ending_connection:
                     starting_connection.add_connection(ending_connection, duration_data)
                     ending_connection.add_connection(starting_connection, duration_data)
+                    self.amount_of_connections += 1
                     
         # using the name of the station to get the station variable 
     def get_station_by_name(self, station_name):
@@ -94,13 +96,16 @@ class RailNL():
         """
         sum_min = 0 # Min het aantal minuten in alle trajecten samen.
         bereden_trajecten = 0
-        bereden_unique_station = []
-        set(bereden_unique_station)
-        for i in range(len(self.trajecten) - 1):
-            sum_min += self.sum_time(self.trajecten[i])      # Berekent per traject de duration
-            bereden_trajecten += len(self.trajecten[i].traject_stations)   # Bekijkt per traject  hoeveel verbindingen er worden gelezen (Dit zorgt er alleen nog voor dat verbindingen dubbelgeteld kunnen worden)
-            bereden_unique_station.add(self.trajecten[i].traject_stations)
-        p =  bereden_trajecten / len(bereden_unique_station)  # de fractie van de bereden verbindingen (dus tussen 0 en 1)
+        bereden_unique_station = set([])
+        
+
+        for traject_index in self.trajecten:
+            sum_min += self.sum_time(traject_index)  # Berekent per traject de duration
+            bereden_trajecten += len(self.trajecten[traject_index].traject_stations)   # Bekijkt per traject  hoeveel verbindingen er worden gelezen (Dit zorgt er alleen nog voor dat verbindingen dubbelgeteld kunnen worden)
+        
+            bereden_unique_station.update(self.trajecten[traject_index].traject_stations)
+            
+        p =  len(bereden_unique_station) / self.amount_of_connections  # de fractie van de bereden verbindingen (dus tussen 0 en 1)
         T = len(self.trajecten) #het aantal trajecten
         K = p*10000 - (T*100 + sum_min)
         return K
@@ -116,6 +121,7 @@ class RailNL():
         return traject
     
     def sum_time(self, traject_index):
+        
         duration = 0
 
         for i in range(len(self.trajecten[traject_index].traject_stations) - 1):
@@ -154,13 +160,17 @@ if __name__ == '__main__':
     NoordHolland.load_stations('StationsHolland.csv')
     NoordHolland.load_connections('ConnectiesHolland.csv')
 
-    new_traject = NoordHolland.create_traject(1)
+    new_traject = NoordHolland.create_traject(0)
     Amsterdam_Centraal = NoordHolland.get_station_by_name('Amsterdam Centraal')
     Amsterdam_Amstel= NoordHolland.get_station_by_name('Amsterdam Amstel')
     new_traject.add_station_to_traject(Amsterdam_Centraal)
     new_traject.add_station_to_traject(Amsterdam_Amstel)
     print("test")
     print(Amsterdam_Amstel.connections)
+    print(len(NoordHolland.trajecten[0].traject_stations))
+    score = NoordHolland.get_score()
+    print("testbereden")
+    print(NoordHolland.trajecten[0].is_bereden(Amsterdam_Centraal))
 
 
     #     assert rail_nl_instance.trajecten[1] == new_traject

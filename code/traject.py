@@ -18,11 +18,17 @@ class Traject:
 
             last_station = self.traject_stations[-1]
 
-        
-            if station in last_station.connections:
+
+            if station in last_station.connections and station not in self.traject_stations:
                 self.traject_stations.append(station)
             else:
-               print("ERROR: Station not in connection with traject")
+               print(f"ERROR: Station {station.name} not in connection with traject or already in traject")
+               print(station)
+        
+               
+    
+    def is_bereden(self, station):
+        return station in self.traject_stations
 
 
     # def get_time(self, connections):
