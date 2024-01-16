@@ -22,13 +22,20 @@ class Traject:
             if station in last_station.connections and station not in self.traject_stations:
                 self.traject_stations.append(station)
             else:
-               print(f"ERROR: Station {station.name} not in connection with traject or already in traject")
-               print(station)
+                if station in self.traject_stations:
+                   print(f"ERROR: Station {station.name} already in traject")
+                elif station not in last_station.connections:
+                    print(f"ERROR: Station {station.name} not in connection with traject")
+
         
                
     
     def is_bereden(self, station):
         return station in self.traject_stations
+    
+    def delete_station(self, station):
+        if station in self.traject_stations:
+            self.traject_stations.remove(station)
 
 
     # def get_time(self, connections):

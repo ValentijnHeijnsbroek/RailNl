@@ -81,7 +81,7 @@ class RailNL():
 
         # Plot connections
         for station in self.stations:
-            for connected_station, duration in station.connections.items():
+            for connected_station in station.connections.items():
                 plt.plot([station.x, connected_station.x], [station.y, connected_station.y], color='gray', linestyle='solid')
         plt.title('Rail Network')
         plt.xlabel('Longitude')
@@ -108,7 +108,7 @@ class RailNL():
         p =  len(bereden_unique_station) / self.amount_of_connections  # de fractie van de bereden verbindingen (dus tussen 0 en 1)
         T = len(self.trajecten) #het aantal trajecten
         K = p*10000 - (T*100 + sum_min)
-        return K
+        return round(K, 2)
     
     def create_traject(self, traject_index):
         """
@@ -133,17 +133,27 @@ class RailNL():
                 # print(duration)
         return duration
 
-    # Prints example output
-    def print_output(self, output_filename):
+    # Saves output to csv file.
+    def upload_output(self, output_filename):
         with open(output_filename, 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(['train', 'stations'])
-            for i in range(1, 4): 
+            for i in range(1, len(self.trajecten) + 1): 
                 train_name = f'train_{i}'
-                stations_list = [station.name for station in self.stations]
+                stations_list = [station.name for station in self.trajecten[i].traject_stations]
                 writer.writerow([train_name, str(stations_list)])
-            writer.writerow((['score', self.score]))
+            writer.writerow((['score', self.get_score()]))
     
+    # Prints example output
+    def print_output(self):
+        for j in range(1, len(self.trajecten) +1 ):
+            print(f"Traject: {j}")
+            for i in range(len(self.trajecten[j].traject_stations)):
+                print(self.trajecten[j].traject_stations[i].name)
+            print(f"Duration for traject {j}: {self.sum_time(j)}")
+            print(" ")
+        print(f"Score: {self.get_score()}")
+
 
 
 # Get the current directory of the script
@@ -160,18 +170,14 @@ if __name__ == '__main__':
     NoordHolland.load_stations('StationsHolland.csv')
     NoordHolland.load_connections('ConnectiesHolland.csv')
 
-    new_traject = NoordHolland.create_traject(0)
+    NoordHolland.create_traject(1)
     Amsterdam_Centraal = NoordHolland.get_station_by_name('Amsterdam Centraal')
-    Amsterdam_Amstel= NoordHolland.get_station_by_name('Amsterdam Amstel')
-    new_traject.add_station_to_traject(Amsterdam_Centraal)
-    new_traject.add_station_to_traject(Amsterdam_Amstel)
-    print("test")
-    print(Amsterdam_Amstel.connections)
-    print(len(NoordHolland.trajecten[0].traject_stations))
-    score = NoordHolland.get_score()
-    print("testbereden")
-    print(NoordHolland.trajecten[0].is_bereden(Amsterdam_Centraal))
-
+    Amsterdam_Sloterdijk = NoordHolland.get_station_by_name('Amsterdam Sloterdijk')
+    NoordHolland.trajecten[1].add_station_to_traject(Amsterdam_Centraal)
+    NoordHolland.trajecten[1].add_station_to_traject(Amsterdam_Sloterdijk)
+    print(NoordHolland.trajecten[1].traject_stations)
+    NoordHolland.trajecten[1].delete_station(Amsterdam_Sloterdijk)
+    print(NoordHolland.trajecten[1].traject_stations)
 
     #     assert rail_nl_instance.trajecten[1] == new_traject
     # # assert rail_nl_instance.trajecten[1].traject_stations[0] == Amsterdam_Centraal
