@@ -6,12 +6,12 @@ max_aantal_trajecten = 7
 
 def greedy_algorithm(herhalingen):
     totaal_herhalingen = herhalingen
-    greedy = RailNL()
-    greedy.load_stations('StationsHolland.csv')
-    greedy.load_connections('ConnectiesHolland.csv')
-    greedy_at_max_score = None
+    greedy_at_max_score = RailNL()
     max_score = 0
     while herhalingen > 0:
+        greedy = RailNL()
+        greedy.load_stations('StationsHolland.csv')
+        greedy.load_connections('ConnectiesHolland.csv')
         aantal_trajecten = random.randint(1, max_aantal_trajecten)
         for i in range(1, aantal_trajecten + 1):
             greedy.create_traject(i)
@@ -44,20 +44,20 @@ def greedy_algorithm(herhalingen):
                     
                 else:
                     break
-
+        if greedy.get_score() > 7345.14:
+            print(greedy.get_score())
         if greedy.get_score() > max_score:
             max_score = greedy.get_score()
-            greedy_at_max_score = copy.deepcopy(greedy)
+            greedy_at_max_score = greedy
         herhalingen -= 1
-        if herhalingen/totaal_herhalingen * 100 % 5 == 0:
+        if herhalingen/totaal_herhalingen * 100 % 1 == 0:
             print(f"{herhalingen/totaal_herhalingen * 100}%")
     return greedy_at_max_score
 
 
 
 
-greedy = greedy_algorithm(100)
-
+greedy = greedy_algorithm(1000000)
 print(greedy.get_score())
 greedy.print_output()
 greedy.upload_output('output_greedy.csv')

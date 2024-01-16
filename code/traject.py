@@ -36,6 +36,7 @@ class Traject:
     def delete_station(self, station):
         if station in self.traject_stations:
             self.traject_stations.remove(station)
+    
 
 
     # def get_time(self, connections):

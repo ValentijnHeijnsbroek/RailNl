@@ -153,6 +153,11 @@ class RailNL():
             print(f"Duration for traject {j}: {self.sum_time(j)}")
             print(" ")
         print(f"Score: {self.get_score()}")
+    
+    # Method that clears all the trajects of the railnl instance.
+    def clear_trajecten(self):
+        self.trajecten = {}
+    
 
 
 
