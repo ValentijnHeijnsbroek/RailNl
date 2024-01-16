@@ -60,11 +60,8 @@ class RailNL():
                         ending_connection = station
             
                 if starting_connection and ending_connection:
-                    starting_connection.connections.append(ending_connection)
-                    starting_connection.connections_durations[ending_connection] = duration_data
-
-                    ending_connection.connections.append(starting_connection)
-                    ending_connection.connections_durations[starting_connection] = duration_data
+                    starting_connection.add_connection(ending_connection, duration_data)
+                    ending_connection.add_connection(starting_connection, duration_data)
                     
         # using the name of the station to get the station variable 
     def get_station_by_name(self, station_name):
@@ -97,13 +94,16 @@ class RailNL():
         """
         sum_min = 0 # Min het aantal minuten in alle trajecten samen.
         bereden_trajecten = 0
-        for i in range(len(self.trajecten)):
-            sum_min += self.trajecten[i].calculate_duration()       # Berekent per traject de duration
-            bereden_trajecten += len(self.trajecten[i].stations)    # Bekijkt per traject  hoeveel verbindingen er worden gelezen (Dit zorgt er alleen nog voor dat verbindingen dubbelgeteld kunnen worden)
-        p = self.total_connections # de fractie van de bereden verbindingen (dus tussen 0 en 1)
+        bereden_unique_station = []
+        set(bereden_unique_station)
+        for i in range(len(self.trajecten) - 1):
+            sum_min += self.sum_time(self.trajecten[i])      # Berekent per traject de duration
+            bereden_trajecten += len(self.trajecten[i].traject_stations)   # Bekijkt per traject  hoeveel verbindingen er worden gelezen (Dit zorgt er alleen nog voor dat verbindingen dubbelgeteld kunnen worden)
+            bereden_unique_station.add(self.trajecten[i].traject_stations)
+        p =  bereden_trajecten / len(bereden_unique_station)  # de fractie van de bereden verbindingen (dus tussen 0 en 1)
         T = len(self.trajecten) #het aantal trajecten
         K = p*10000 - (T*100 + sum_min)
-        return sum_min
+        return K
     
     def create_traject(self, traject_index):
         """
@@ -115,17 +115,15 @@ class RailNL():
         
         return traject
     
-    def sum_time(self):
-        traject = self.trajecten[0]
+    def sum_time(self, traject_index):
         duration = 0
 
-        for i in range(len(traject.traject_stations) - 1):
-            station1 = traject.traject_stations[i]
-            station2 = traject.traject_stations[i + 1]
-            connection_key = (station1, station2)
+        for i in range(len(self.trajecten[traject_index].traject_stations) - 1):
+            station1 = self.trajecten[traject_index].traject_stations[i]
+            station2 = self.trajecten[traject_index].traject_stations[i + 1]
 
-            if self.connections_time[connection_key]:
-                duration += self.connections_time[connection_key]
+            if station1.connections_durations[station2]:
+                duration += station1.connections_durations[station2]
                 # print(duration)
         return duration
 
@@ -155,8 +153,19 @@ if __name__ == '__main__':
     NoordHolland = RailNL()
     NoordHolland.load_stations('StationsHolland.csv')
     NoordHolland.load_connections('ConnectiesHolland.csv')
-    
 
+    new_traject = NoordHolland.create_traject(1)
+    Amsterdam_Centraal = NoordHolland.get_station_by_name('Amsterdam Centraal')
+    Amsterdam_Amstel= NoordHolland.get_station_by_name('Amsterdam Amstel')
+    new_traject.add_station_to_traject(Amsterdam_Centraal)
+    new_traject.add_station_to_traject(Amsterdam_Amstel)
+    print("test")
+    print(Amsterdam_Amstel.connections)
+
+
+    #     assert rail_nl_instance.trajecten[1] == new_traject
+    # # assert rail_nl_instance.trajecten[1].traject_stations[0] == Amsterdam_Centraal
+    # # assert rail_nl_instance.trajecten[1].traject_stations[1] == Amsterdam_Sloterdijk
 
     # NoordHolland.create_traject()
     # print(NoordHolland.trajecten[0])

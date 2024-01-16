@@ -5,8 +5,12 @@ class Station:
         self.x = x
         self.y = y
 
-        self.connections = []
+        self.connections = set()
         self.connections_durations = {}
+    
+    def add_connection(self, station, duration):
+        self.connections.add(station)
+        self.connections_durations[station] = duration
 
     def has_connection(self, station):
         return station in self.connections

@@ -16,7 +16,9 @@ class Traject:
         if len(self.traject_stations) == 0:
             self.traject_stations.append(station)
         else:
+
             last_station = self.traject_stations[-1]
+
         
             if station in last_station.connections:
                 self.traject_stations.append(station)
