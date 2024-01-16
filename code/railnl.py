@@ -10,8 +10,7 @@ class RailNL():
         self.stations = []
         self.stations_connections = {}
         self.score = 10
-        self.connections = Connections()
-        self.trajecten = []
+        self.trajecten = {}
 
     def load_stations(self, station_filename):
         """
@@ -48,11 +47,8 @@ class RailNL():
                 duration_data = float(row[2])
 
 
-                connected_stations = []
-                connected_stations.append((row[0], row[1]))
-
-                self.connections.add_connection(station_data, connection_data, duration_data)
-
+                starting_connection = None
+                ending_connection = None
                 for station in self.stations:
                     if station.name == station_data:
                         starting_connection = station
@@ -62,21 +58,14 @@ class RailNL():
 
                     if station.name == connection_data:
                         ending_connection = station
+            
+                if starting_connection and ending_connection:
+                    starting_connection.connections.append(ending_connection)
+                    starting_connection.connections_durations[ending_connection] = duration_data
 
-                        # name_2 = connection_data
-                starting_connection.connections.append(ending_connection)
-                starting_connection.connections_durations[ending_connection] = duration_data
-
-                ending_connection.connections.append(starting_connection)
-                ending_connection.connections_durations[starting_connection] = duration_data
-                
-                # check the connections 
-                
-                # self.stations_connections[starting_connection].append(ending_connection)
-                # self.stations_connections[ending_connection].append(starting_connection)
-                
-                # print(self.stations_connections)
-
+                    ending_connection.connections.append(starting_connection)
+                    ending_connection.connections_durations[starting_connection] = duration_data
+                    
         # using the name of the station to get the station variable 
     def get_station_by_name(self, station_name):
         for station in self.stations:
@@ -116,13 +105,13 @@ class RailNL():
         K = p*10000 - (T*100 + sum_min)
         return sum_min
     
-    def create_traject(self):
+    def create_traject(self, traject_index):
         """
         Create a empty traject
         """
         traject = Traject()
         # append the traject into the trajecten list
-        self.trajecten.append(traject)
+        self.trajecten[traject_index] = traject
         
         return traject
     
@@ -162,27 +151,21 @@ data_directory = os.path.join(parent_directory, 'data')  # Change 'data' to the 
 # Set the working directory to the data directory
 os.chdir(data_directory)
 
-
-# start_station_names = ['Alkmaar']
-
-# for start_station_name in start_station_names:
-#     traject = test.create_traject(start_station_name)
-#     print(f'Traject stations for {start_station_name}: {traject.traject_stations}')
-# time = test.sum_time()
-# print(time)
-
 if __name__ == '__main__':
     NoordHolland = RailNL()
     NoordHolland.load_stations('StationsHolland.csv')
     NoordHolland.load_connections('ConnectiesHolland.csv')
-    NoordHolland.create_traject()
-    print(NoordHolland.trajecten[0])
-    first = NoordHolland.trajecten[0]
-    Alkmaar = NoordHolland.stations[0]
-    first.add_station_to_traject(Alkmaar)
-    Hoorn = NoordHolland.get_station_by_name("Hoorn")
-    first.add_station_to_traject(Hoorn)
-    print(Hoorn.connections_durations)
+    
+
+
+    # NoordHolland.create_traject()
+    # print(NoordHolland.trajecten[0])
+    # first = NoordHolland.trajecten[0]
+    # Alkmaar = NoordHolland.stations[0]
+    # first.add_station_to_traject(Alkmaar)
+    # Hoorn = NoordHolland.get_station_by_name("Hoorn")
+    # first.add_station_to_traject(Hoorn)
+    # print(Hoorn.connections_durations)
     # Delft = NoordHolland.get_station_by_name("Delft")
     # first.add_station_to_traject(Delft)
     # print(first.traject_stations)
