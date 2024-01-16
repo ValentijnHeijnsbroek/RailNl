@@ -1,6 +1,7 @@
 from station import Station
 from traject import Traject
 from connections import Connections
+import numpy as np
 import csv
 import os
 import matplotlib.pyplot as plt
@@ -104,7 +105,10 @@ class RailNL():
             bereden_trajecten += len(self.trajecten[traject_index].traject_stations)   # Bekijkt per traject  hoeveel verbindingen er worden gelezen (Dit zorgt er alleen nog voor dat verbindingen dubbelgeteld kunnen worden)
         
             bereden_unique_station.update(self.trajecten[traject_index].traject_stations)
-            
+        
+        if self.amount_of_connections == 0:
+        # If there are no connections, return 0 for genetic algorithm
+            return 0
         p =  len(bereden_unique_station) / self.amount_of_connections  # de fractie van de bereden verbindingen (dus tussen 0 en 1)
         T = len(self.trajecten) #het aantal trajecten
         K = p*10000 - (T*100 + sum_min)
@@ -157,7 +161,73 @@ class RailNL():
     # Method that clears all the trajects of the railnl instance.
     def clear_trajecten(self):
         self.trajecten = {}
+
+    # Method that encodes solution to binary, using it as a experiment for genetic algorithm (Vaal)    
+    def encode_solution(self):
+        # Encode selected stations and connections as binary
+        encoded_solution = []
+
+        # Iterate over trajecten
+        for traject_index in range(1, self.max_trajecten + 1):
+            # Create a set of selected stations for each traject
+            selected_stations = set(station for station in self.trajecten[traject_index].traject_stations)
+
+            # Encode stations as binary (1 if selected, 0 if not)
+            for station in self.stations:
+                if station in selected_stations:
+                    encoded_solution.append(1)
+                else:
+                    encoded_solution.append(0)
+
+                # Encode the number of connections for each station
+                encoded_solution.append(len(station.connections))
+
+        return np.array(encoded_solution)
+
     
+    def get_num_connections(self):
+        return self.amount_of_connections
+    
+    # Werkt niet,, ben dit nu aan t proberen voor genetic algorithm
+    def convert_solution(self, encoded_solution, rail_instance=None, threshold=0.5):
+        if rail_instance is None:
+            rail_instance = RailNL()
+
+        traject_index = 1
+        current_station = None
+
+        # Decode stations and connections
+        for index, value in enumerate(encoded_solution):
+            # Check if the station is selected
+            if value > threshold:
+                station_index = index // 2
+                if station_index < len(self.stations):
+                    station = self.stations[station_index]
+
+                    # Check if the station needs to be added to the current traject
+                    if traject_index not in rail_instance.trajecten:
+                        rail_instance.create_traject(traject_index)
+
+                    rail_instance.trajecten[traject_index].add_station_to_traject(station)
+
+                    # Update the current station
+                    current_station = station
+
+            # Check if a connection should be established
+            if index % 2 == 1 and current_station is not None:
+                connection_index = index // 2
+                if connection_index < self.amount_of_connections:
+                    connection_duration = 5
+                    # Assuming your connections are stored as pairs of stations
+                    other_station = self.stations[connection_index]
+                    current_station.add_connection(other_station, connection_duration)
+
+        return rail_instance
+
+
+
+
+
 
 
 
