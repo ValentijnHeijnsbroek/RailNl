@@ -1,6 +1,5 @@
 import csv
 from station import Station
-from connections import Connections
 
 class Traject:
     def __init__(self):
@@ -26,25 +25,17 @@ class Traject:
                print("ERROR: Station not in connection with traject")
 
 
-    
-        # connected_stations = stations_connections[station]        
-        # for connected_station in connected_stations:
-        #     if connected_station not in self.traject_stations:
-        #         self.traject_stations.append(connected_station)
-        #         break
+    # def get_time(self, connections):
+    #     """
+    #     Here the duration is added between the stations of the traject until it reaches the traject's end
+    #     """
+    #     for i in range(len(self.traject_stations) - 1):
+    #         station1 = self.traject_stations[i]
+    #         station2 = self.traject_stations[i + 1]
+    #         connection_key = (station1, station2)
 
-
-    def get_time(self, connections):
-        """
-        Here the duration is added between the stations of the traject until it reaches the traject's end
-        """
-        for i in range(len(self.traject_stations) - 1):
-            station1 = self.traject_stations[i]
-            station2 = self.traject_stations[i + 1]
-            connection_key = (station1, station2)
-
-            if connections.has_connection(connection_key):
-                self.duration += connections.get_duration(connection_key)
+    #         if connections.has_connection(connection_key):
+    #             self.duration += connections.get_duration(connection_key)
 
 
 

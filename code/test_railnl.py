@@ -1,8 +1,6 @@
-# test_railnl.py
 
 import pytest
 from railnl import RailNL
-  # Assuming your main class is in a file named railnl.py
 
 @pytest.fixture
 def rail_nl_instance():
@@ -39,6 +37,7 @@ def test_stations_in_traject(rail_nl_instance):
     assert rail_nl_instance.trajecten[1].traject_stations[1] == Amsterdam_Amstel
     assert rail_nl_instance.trajecten[1].traject_stations[2] == Amsterdam_Zuid
     assert rail_nl_instance.sum_time(1) == 18
+
 
 
 
