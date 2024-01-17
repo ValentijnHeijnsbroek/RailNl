@@ -42,7 +42,6 @@ def random_algorithm(herhalingen):
         herhalingen -= 1 
         if herhalingen/totaal_herhalingen * 100 % 1 == 0:
             print(f"{herhalingen/totaal_herhalingen * 100}%")
-            baseline.plot_network()
 
     return baseline_at_max_score
 
