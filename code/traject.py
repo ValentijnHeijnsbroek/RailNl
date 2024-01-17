@@ -1,5 +1,6 @@
 import csv
 from station import Station
+import random
 
 class Traject:
     def __init__(self):
@@ -26,9 +27,6 @@ class Traject:
                    print(f"ERROR: Station {station.name} already in traject")
                 elif station not in last_station.connections:
                     print(f"ERROR: Station {station.name} not in connection with traject")
-
-        
-               
     
     def is_bereden(self, station):
         return station in self.traject_stations
@@ -37,56 +35,26 @@ class Traject:
         if station in self.traject_stations:
             self.traject_stations.remove(station)
     
+    def delete_latest_station(self):
+        if self.traject_stations:
+            self.traject_stations.pop()
+        else:
+            print("Cannot delete from an empty list.")
 
+    # Returns a random connected station
+    def random_connected_station(self):
+        if self.traject_stations:
+            last_station = self.traject_stations[-1]
+            list_possible_stations = [station for station in last_station.connections if not self.is_bereden(station)]
+            if list_possible_stations:
+                
+                random_station = random.choice(list_possible_stations)
+                return random_station
+            else:
+                print("No connections")
+                return None
+        else:
+            print("Cannot add random station to an empty traject.")
+            return None
 
-    # def get_time(self, connections):
-    #     """
-    #     Here the duration is added between the stations of the traject until it reaches the traject's end
-    #     """
-    #     for i in range(len(self.traject_stations) - 1):
-    #         station1 = self.traject_stations[i]
-    #         station2 = self.traject_stations[i + 1]
-    #         connection_key = (station1, station2)
-
-    #         if connections.has_connection(connection_key):
-    #             self.duration += connections.get_duration(connection_key)
-
-
-
-# class Traject():
-#     def __init__(self):
-#         self.stations = []
-
-#     def add_station(self, station):
-#         self.stations.append(station)
-        
-#     def calculate_duration(self):
-#         duration = 0
-#         for i in range(len(self.stations) - 1):
-#             current_station = self.stations[i]
-#             next_station = self.stations[i + 1]
-#             duration += current_station.connections[next_station]
-#         return duration
-
-
-# class Traject:
-#     stations = []
-#     def __init__(self, traject_stations: list, traject_duration: int):
-#         self.traject_stations = traject_stations
-#         self.duration = 0
-        
-#     def add_station(self, station):
-#         if not self.has_station(station):
-#             self.stations.append(station)
-
-#     def delself._station(self, station):
-#         if self.has_station(station):
-#             self.stations.remove(station)
-        
-#     def has_station(self, station):
-#         return station in self.stations   
-    
-#     def get_station_names(self):
-#         return [station.get_name() for station in self.stations]
-    
     
