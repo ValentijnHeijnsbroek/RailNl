@@ -88,19 +88,25 @@ class RailNL():
         # Plot stations
         for station in self.stations:
             plt.scatter(station.x, station.y, marker='o', color='blue')
+        
+        line_styles = ['-', '--', '-.', ':']
 
         # Plot connections from trajecten
         for traject_index in self.trajecten:
 
             traject_stations = self.trajecten[traject_index].traject_stations
-            print(traject_stations)
             colorr = plt.cm.rainbow(traject_index / len(self.trajecten))  # Assign color based on traject_index
+            style_index = traject_index % len(line_styles)
+            style = line_styles[style_index]
 
             for i in range(len(traject_stations) - 1):
                 station1 = traject_stations[i]
                 station2 = traject_stations[i + 1]
 
-                plt.plot([station1.x, station2.x], [station1.y, station2.y], color=colorr, linestyle='solid', linewidth=2)
+                offset = 0.01 * (i % 2)
+                
+
+                plt.plot([station1.x, station2.x], [station1.y + offset, station2.y + offset], color=colorr, linestyle=style, linewidth=2, alpha = 1)
 
         plt.title('Rail Network Netherlands')
 
