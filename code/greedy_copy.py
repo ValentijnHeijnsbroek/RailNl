@@ -61,7 +61,7 @@ def greedy_algorithm(herhalingen):
 
 
 
-# railnl_at_max_score = greedy_algorithm(1000)
-# railnl_at_max_score.print_output()
-# railnl_at_max_score.upload_output('output_greedy.csv')
+railnl_at_max_score = greedy_algorithm(1000)
+railnl_at_max_score.print_output()
+railnl_at_max_score.upload_output('output_greedy.csv')
 

@@ -135,20 +135,22 @@ class RailNL():
         sum_min = 0 # Min het aantal minuten in alle trajecten samen.
         bereden_trajecten = 0
         bereden_unique_station = set([])
-        
-
+        T = len(self.trajecten) #het aantal trajecten
         for traject_index in self.trajecten:
             sum_min += self.sum_time(traject_index)  # Berekent per traject de duration
             bereden_trajecten += len(self.trajecten[traject_index].traject_stations)   # Bekijkt per traject  hoeveel verbindingen er worden gelezen (Dit zorgt er alleen nog voor dat verbindingen dubbelgeteld kunnen worden)
-        
+            # If traject is empty, it does not get counted.
+            if len(self.trajecten[traject_index].traject_stations)== 0:
+                T = T - 1
             bereden_unique_station.update(self.trajecten[traject_index].traject_stations)
         
         if self.amount_of_connections == 0:
         # If there are no connections, return 0 for genetic algorithm
             return 0
         p =  len(bereden_unique_station) / self.amount_of_connections  # de fractie van de bereden verbindingen (dus tussen 0 en 1)
-        T = len(self.trajecten) #het aantal trajecten
+
         K = p*10000 - (T*100 + sum_min)
+        
         return round(K, 2)
     
     def create_traject(self, traject_index):
@@ -188,11 +190,14 @@ class RailNL():
     # Prints example output
     def print_output(self):
         for j in range(1, len(self.trajecten) +1 ):
-            print(f"Traject: {j}")
-            for i in range(len(self.trajecten[j].traject_stations)):
-                print(self.trajecten[j].traject_stations[i].name)
-            print(f"Duration for traject {j}: {self.sum_time(j)}")
-            print(" ")
+            if self.trajecten[j].traject_stations == []:
+                continue
+            else:
+                print(f"Traject: {j}")
+                for i in range(len(self.trajecten[j].traject_stations)):
+                    print(self.trajecten[j].traject_stations[i].name)
+                print(f"Duration for traject {j}: {self.sum_time(j)}")
+                print(" ")
         print(f"Score: {self.get_score()}")
     
     # Method that clears all the trajects of the railnl instance.
@@ -203,6 +208,16 @@ class RailNL():
     
     def get_num_connections(self):
         return self.amount_of_connections
+
+    # Delete traject, and adjusts every traject index so that it is numbered from 1 to len(trajecten)
+    # def delete_traject(self, traject_index):
+    #     if traject_index in self.trajecten:
+    #         del self.trajecten[traject_index]
+    #         for i in range(traject_index, len(self.trajecten) + 1):
+    #             self.trajecten[i+1] = i
+    #     else:
+    #         print(f"ERROR: Traject {traject_index} does not exist.")
+
     
    
 
@@ -235,10 +250,13 @@ if __name__ == '__main__':
 
     NoordHolland.trajecten[1].add_station_to_traject(Amsterdam_Centraal)
     NoordHolland.trajecten[1].add_station_to_traject(Amsterdam_Sloterdijk)
-    NoordHolland.trajecten[2].add_station_to_traject(Amsterdam_Sloterdijk)
-    NoordHolland.trajecten[2].add_station_to_traject(Haarlem)
-    print(NoordHolland.trajecten[1].traject_stations)
-    NoordHolland.plot_network()
+
+    # print(NoordHolland.trajecten[1].traject_stations)
+    # print("test")
+    # print(len(NoordHolland.trajecten[2].traject_stations))
+
+    # print(len(NoordHolland.trajecten))
+    # print(NoordHolland.get_score())
 
     #     assert rail_nl_instance.trajecten[1] == new_traject
     # # assert rail_nl_instance.trajecten[1].traject_stations[0] == Amsterdam_Centraal

@@ -6,6 +6,10 @@ class Traject:
     def __init__(self):
         self.duration = 0
         self.traject_stations = []
+
+        # last_station = self.traject_stations[-1]
+        # self.list_possible_stations = [station for station in last_station.connections if not self.is_bereden(station)]
+
     
     def add_station_to_traject(self, station: Station):
         """
@@ -57,4 +61,6 @@ class Traject:
             print("Cannot add random station to an empty traject.")
             return None
 
+    def last_station(self):
+        return self.traject_stations[-1]    
     

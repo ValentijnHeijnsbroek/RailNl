@@ -15,8 +15,12 @@ def simulated_annealing(temperature, cooling_rate, iterations):
     best_score = 0
 
     for iteration in range(iterations):
+        # Print progress of iterations
+        if iteration/iterations * 100 % 5 == 0:
+            print(f"{iteration/iterations * 100}%")
+  
         current_temperature = temperature * math.exp(-cooling_rate * iteration)
-
+        
         # Generate a new solution
         new_rail = generate_new_solution(current_rail)
 
@@ -38,8 +42,38 @@ def simulated_annealing(temperature, cooling_rate, iterations):
 def generate_new_solution(current_rail):
     if len(current_rail.trajecten) <= 1:
         new_rail = greedy_algorithm(100)
+        print("Greedy succesfully loaded, greedy has a score of: ", new_rail.get_score())
     else:
         new_rail = copy.deepcopy(current_rail)
+
+    operation = random.choice(['add_traject', 'delete_traject', 'add_station', 'delete_station'])
+
+    traject_index = random.randint(1, len(new_rail.trajecten))
+
+    #if selected traject is empty, add a random station
+
+    if new_rail.trajecten[traject_index].traject_stations == []:
+        begin_station = random.choice(new_rail.stations)
+        new_rail.trajecten[traject_index].add_station_to_traject(begin_station)
+    
+    if operation == 'add_station':
+        # Implement logic to add a station to an existing traject
+  
+        new_station = new_rail.trajecten[traject_index].random_connected_station()
+        last_station = new_rail.trajecten[traject_index].last_station()
+        # duration = last_station.get_duration(new_station)
+        duration = last_station.get_duration(new_station)
+
+        # Check if the new station can be added to the traject
+        if new_station and new_rail.sum_time(traject_index) + duration <= max_aantal_minuten:
+            new_rail.trajecten[traject_index].add_station_to_traject(new_station)
+        else:
+            operation = 'delete_station'
+
+    elif operation == 'delete_station':
+        # Implement logic to delete a station from an existing traject
+        traject_index = random.randint(1, len(new_rail.trajecten))
+        new_rail.trajecten[traject_index].delete_latest_station()
 
     # Randomly select a traject to modify
     if len(new_rail.trajecten) == 1:
@@ -51,24 +85,25 @@ def generate_new_solution(current_rail):
         traject_index = random.randint(1, len(new_rail.trajecten))
 
 
-   # Delete the last two stations if the traject is longer than 3 stations
+   # Delete the last two stations if the traject is longer than 3 stations, then pick a random station and a greedy station
     traject = new_rail.trajecten[traject_index]
     if len(traject.traject_stations) > 3:
-        # print(f"Deleting: {traject.traject_stations[-1].name}")
+
         traject.delete_latest_station()
-        # print(f"Deleting: {traject.traject_stations[-1].name}")
+
         traject.delete_latest_station()
-        greedy_station = greedy_decision(new_rail, traject_index)
-        if greedy_station:
-            traject.add_station_to_traject(greedy_station)
+        random_station = traject.random_connected_station()
+        if random_station:
+            traject.add_station_to_traject(random_station)
         greedy_station_2 = greedy_decision(new_rail, traject_index)
         if greedy_station_2:
             traject.add_station_to_traject(greedy_station_2)
-
-    elif len(traject.traject_stations) >= 2:
-        traject.delete_latest_station()
-        random_station = traject.random_connected_station()
-        traject.add_station_to_traject(random_station)
+    
+    elif len(traject.traject_stations) <= 3:
+        traject.traject_stations = []
+        # traject.delete_latest_station()
+        # random_station = traject.random_connected_station()
+        # traject.add_station_to_traject(random_station)
         
     
     return new_rail
@@ -83,8 +118,10 @@ def accept_solution(current_score, new_score, temperature):
 # Set parameters for simulated annealing
 initial_temperature = 1000
 cooling_rate = 0.005
-iterations = 1000
+iterations = 10000
 
 rail_at_max_score = simulated_annealing(initial_temperature, cooling_rate, iterations)
 rail_at_max_score.print_output()
-rail_at_max_score.upload_output('output_simulated_annealing.csv')
+# print()
+# rail_at_max_score.upload_output('output_simulated_annealing.csv')
+

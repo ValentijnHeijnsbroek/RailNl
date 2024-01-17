@@ -22,8 +22,14 @@ def greedy_algorithm(herhalingen):
                 new_station = greedy_decision(greedy, traject_index=i)
                 if new_station:
                     greedy.trajecten[i].add_station_to_traject(new_station)
-                else:
+                    # If length of traject == 1 and new_station is None, choose a new random begin station
+                elif len(greedy.trajecten[i].traject_stations) == 1 and new_station is None:
+                        greedy.trajecten[i].delete_station(greedy.trajecten[i].traject_stations[0])
+                        begin_station = random.choice(greedy.stations)
+                        greedy.trajecten[i].add_station_to_traject(begin_station)
+                else:    
                     break
+
         # for own reference if highscore is beaten
         if greedy.get_score() > 7300.14:
             print(greedy.get_score())
@@ -37,3 +43,6 @@ def greedy_algorithm(herhalingen):
             print(f"{herhalingen/totaal_herhalingen * 100}%")
         greedy.trajecten = {}
     return greedy_at_max_score
+
+greedy = greedy_algorithm(10000)
+greedy.print_output()
