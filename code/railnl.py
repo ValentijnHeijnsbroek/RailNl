@@ -1,6 +1,9 @@
 from station import Station
 from traject import Traject
 from connections import Connections
+
+import geopandas as gpd
+import contextily as ctx
 import numpy as np
 import csv
 import os
@@ -74,21 +77,49 @@ class RailNL():
         return None
     
     def plot_network(self):
-        plt.figure(figsize=(8, 8))
-        
+        # Read GeoJSON file for background (replace 'path/to/nl_regions.geojson' with the actual path)
+        background_geojson_path = '../data/nl_regions.geojson'
+        background_data = gpd.read_file(background_geojson_path)
+
+        # Plot background
+        fig, ax = plt.subplots(figsize=(8, 8))
+        background_data.plot(ax=ax, color='lightgray')
+
         # Plot stations
         for station in self.stations:
             plt.scatter(station.x, station.y, marker='o', color='blue')
 
-        # Plot connections
-        for station in self.stations:
-            for connected_station in station.connections.items():
-                plt.plot([station.x, connected_station.x], [station.y, connected_station.y], color='gray', linestyle='solid')
-        plt.title('Rail Network')
-        plt.xlabel('Longitude')
-        plt.ylabel('Latitude')
+        # Plot connections from trajecten
+        for traject_index in self.trajecten:
+
+            traject_stations = self.trajecten[traject_index].traject_stations
+            print(traject_stations)
+            colorr = plt.cm.rainbow(traject_index / len(self.trajecten))  # Assign color based on traject_index
+
+            for i in range(len(traject_stations) - 1):
+                station1 = traject_stations[i]
+                station2 = traject_stations[i + 1]
+
+                plt.plot([station1.x, station2.x], [station1.y, station2.y], color=colorr, linestyle='solid', linewidth=2)
+
+        plt.title('Rail Network Netherlands')
+
+        # Set axis limits based on the range of station coordinates
+        min_x = min(station.x for station in self.stations) 
+        max_x = max(station.x for station in self.stations) 
+        min_y = min(station.y for station in self.stations) 
+        max_y = max(station.y for station in self.stations)
+
+        # Add some padding to the limits
+        padding = 0.4
+        ax.set_xlim(min_x - padding, max_x + padding)
+        ax.set_ylim(min_y - padding, max_y + padding)
+
+        ax.axis('off')
         plt.grid(False)
-        plt.show()
+
+        plt.savefig('rail_network_plot.png')
+
 
     # Calculates and returns score.
     def get_score(self):
@@ -191,13 +222,17 @@ if __name__ == '__main__':
     NoordHolland.load_connections('ConnectiesHolland.csv')
 
     NoordHolland.create_traject(1)
+    NoordHolland.create_traject(2)
     Amsterdam_Centraal = NoordHolland.get_station_by_name('Amsterdam Centraal')
     Amsterdam_Sloterdijk = NoordHolland.get_station_by_name('Amsterdam Sloterdijk')
+    Haarlem = NoordHolland.get_station_by_name('Haarlem')
+
     NoordHolland.trajecten[1].add_station_to_traject(Amsterdam_Centraal)
     NoordHolland.trajecten[1].add_station_to_traject(Amsterdam_Sloterdijk)
+    NoordHolland.trajecten[2].add_station_to_traject(Amsterdam_Sloterdijk)
+    NoordHolland.trajecten[2].add_station_to_traject(Haarlem)
     print(NoordHolland.trajecten[1].traject_stations)
-    NoordHolland.trajecten[1].delete_station(Amsterdam_Sloterdijk)
-    print(NoordHolland.trajecten[1].traject_stations)
+    NoordHolland.plot_network()
 
     #     assert rail_nl_instance.trajecten[1] == new_traject
     # # assert rail_nl_instance.trajecten[1].traject_stations[0] == Amsterdam_Centraal

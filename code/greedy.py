@@ -55,6 +55,7 @@ def greedy_algorithm(herhalingen):
         # print progress
         if herhalingen/totaal_herhalingen * 100 % 1 == 0:
             print(f"{herhalingen/totaal_herhalingen * 100}%")
+        greedy.plot_network()
         greedy.trajecten = {}
     return greedy_at_max_score
 
