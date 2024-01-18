@@ -1,0 +1,4 @@
+# RailNL Gitignore
+
+# Ignore pycache directory
+__pycache__/
