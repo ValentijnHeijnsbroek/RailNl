@@ -10,6 +10,8 @@ def random_algorithm(herhalingen):
     totaal_herhalingen = herhalingen
     baseline_at_max_score = RailNL()
     max_score = 0
+    baseline_at_min_score = RailNL()
+    min_score = 10000
     while herhalingen > 0:
         aantal_trajecten = random.randint(1, max_aantal_trajecten)
         baseline = RailNL()
@@ -39,15 +41,19 @@ def random_algorithm(herhalingen):
         if baseline.get_score() > max_score:
             max_score = baseline.get_score()
             baseline_at_max_score = baseline
+        if baseline.get_score() < min_score:
+            min_score = baseline.get_score()
+            baseline_at_min_score = baseline
+            
         herhalingen -= 1 
         if herhalingen/totaal_herhalingen * 100 % 1 == 0:
             print(f"{herhalingen/totaal_herhalingen * 100}%")
 
-    return baseline_at_max_score
+    return baseline_at_max_score, baseline_at_min_score
 
 
 # random_test = random_algorithm(10000)
-# # print_output(random_test)
+#  #print_output(random_test)
 # print(random_test.get_score())
 # random_test.print_output()
 # random_test.upload_output('output.csv')

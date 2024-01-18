@@ -3,7 +3,7 @@ from traject import Traject
 from connections import Connections
 
 import geopandas as gpd
-import contextily as ctx
+#import contextily as ctx
 import numpy as np
 import csv
 import os
