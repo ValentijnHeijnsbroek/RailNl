@@ -302,6 +302,7 @@ if __name__ == '__main__':
 
     NoordHolland.trajecten[1].add_station_to_traject(Amsterdam_Centraal)
     NoordHolland.trajecten[1].add_station_to_traject(Amsterdam_Sloterdijk)
+    print(Amsterdam_Centraal.get_duration(Amsterdam_Sloterdijk)  ) 
 
     # print(NoordHolland.trajecten[1].traject_stations)
     # print("test")

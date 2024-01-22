@@ -1,11 +1,19 @@
 from railnl import RailNL
 import random
 
-def initialize_rail():
-    rail_nl = RailNL()
-    rail_nl.load_stations('StationsNationaal.csv')
-    rail_nl.load_connections('ConnectiesNationaal.csv')
-    return rail_nl
+def initialize_rail(Map = 'Nationaal'):
+    if Map == 'Nationaal':
+        rail_nl = RailNL()
+        rail_nl.load_stations('StationsNationaal.csv')
+        rail_nl.load_connections('ConnectiesNationaal.csv')
+        return rail_nl
+    elif Map == "Holland":
+        rail_nl = RailNL()
+        rail_nl.load_stations('StationsHolland.csv')
+        print("test")
+        rail_nl.load_connections('ConnectiesHolland.csv')
+        print(type(rail_nl))
+        return rail_nl
 
 # Takes in a traject and returns the station with the highest delta score
 def greedy_decision(rail, traject_index, max_aantal_minuten=180):
@@ -24,3 +32,7 @@ def greedy_decision(rail, traject_index, max_aantal_minuten=180):
         if len(rail.trajecten[traject_index].traject_stations) == 1:
             best_station = random.choice(list_possible_stations)
     return best_station
+
+# test = initialize_rail("Holland")
+# test.create_traject(1) 
+# print(test.trajecten)

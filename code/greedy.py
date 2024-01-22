@@ -8,8 +8,8 @@ max_aantal_minuten = 180
 
 def greedy_algorithm(herhalingen):
     totaal_herhalingen = herhalingen
-    greedy_at_max_score = initialize_rail()
-    greedy = initialize_rail()
+    greedy_at_max_score = initialize_rail("Nationaal")
+    greedy = initialize_rail("Nationaal")
     max_score = 0
     while herhalingen > 0:
         aantal_trajecten = random.randint(1, max_aantal_trajecten)
@@ -44,5 +44,5 @@ def greedy_algorithm(herhalingen):
         greedy.trajecten = {}
     return greedy_at_max_score
 
-greedy = greedy_algorithm(10000)
-greedy.print_output()
+# greedy = greedy_algorithm(10000)
+# greedy.print_output()

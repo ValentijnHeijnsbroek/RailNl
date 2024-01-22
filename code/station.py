@@ -16,4 +16,7 @@ class Station:
         return station in self.connections
     
     def get_duration(self, station):
-        return self.connections_durations[station]
+        if station and self.connections_durations[station]:
+            return self.connections_durations[station]
+        else:
+            return None

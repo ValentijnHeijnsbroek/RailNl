@@ -36,8 +36,6 @@ def random_algorithm(herhalingen):
                 else:
                     break
         # If the score is higher than the max score, save the baseline        
-        if baseline.get_score() > 7300.14:
-            print(baseline.get_score())
         if baseline.get_score() > max_score:
             max_score = baseline.get_score()
             baseline_at_max_score = baseline
@@ -49,8 +47,11 @@ def random_algorithm(herhalingen):
         if herhalingen/totaal_herhalingen * 100 % 1 == 0:
             print(f"{herhalingen/totaal_herhalingen * 100}%")
 
-    return baseline_at_max_score, baseline_at_min_score
+    return baseline_at_max_score
+    # return baseline_at_max_score, baseline_at_min_score
 
+baseline = random_algorithm(100000)
+print(baseline.get_score())
 
 # random_test = random_algorithm(10000)
 #  #print_output(random_test)

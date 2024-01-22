@@ -55,7 +55,7 @@ class Traject:
                 random_station = random.choice(list_possible_stations)
                 return random_station
             else:
-                print("No connections")
+                # print("No connections")
                 return None
         else:
             print("Cannot add random station to an empty traject.")
