@@ -1,10 +1,9 @@
 from station import Station
 from traject import Traject
-from connections import Connections
+from matplotlib.widgets import CheckButtons
 
+import mplcursors
 import geopandas as gpd
-#import contextily as ctx
-import numpy as np
 import csv
 import os
 import matplotlib.pyplot as plt
@@ -75,6 +74,7 @@ class RailNL():
             if station.name == station_name:
                 return station
         return None
+
     
     def plot_network(self):
         # Read GeoJSON file for background (replace 'path/to/nl_regions.geojson' with the actual path)
@@ -85,28 +85,32 @@ class RailNL():
         fig, ax = plt.subplots(figsize=(8, 8))
         background_data.plot(ax=ax, color='lightgray')
 
-        # Plot stations
-        for station in self.stations:
-            plt.scatter(station.x, station.y, marker='o', color='blue')
-        
-        line_styles = ['-', '--', '-.', ':']
-
         # Plot connections from trajecten
+        line_styles = ['-', '--', '-.', ':']
+        traject_lines = []  # Keep track of lines associated with each traject
         for traject_index in self.trajecten:
-
             traject_stations = self.trajecten[traject_index].traject_stations
-            colorr = plt.cm.rainbow(traject_index / len(self.trajecten))  # Assign color based on traject_index
+            colorr = plt.cm.rainbow(traject_index / len(self.trajecten))
             style_index = traject_index % len(line_styles)
             style = line_styles[style_index]
 
+            lines = []
             for i in range(len(traject_stations) - 1):
                 station1 = traject_stations[i]
                 station2 = traject_stations[i + 1]
 
                 offset = 0.01 * (i % 2)
-                
 
-                plt.plot([station1.x, station2.x], [station1.y + offset, station2.y + offset], color=colorr, linestyle=style, linewidth=2, alpha = 1)
+                line, = ax.plot([station1.x, station2.x], [station1.y + offset, station2.y + offset],
+                         color=colorr, linestyle=style, linewidth=2, alpha=0.9)
+                lines.append(line)
+
+            traject_lines.append(lines)
+
+        # Plot stations with explicit labels
+        for station in self.stations:
+            scatter_point = plt.scatter(station.x, station.y, marker='o', color='blue')
+            scatter_point.set_label(station.name)  # Set the label for the scatter point
 
         plt.title('Rail Network Netherlands')
 
@@ -124,7 +128,45 @@ class RailNL():
         ax.axis('off')
         plt.grid(False)
 
-        plt.savefig('rail_network_plot.png')
+        # Use mplcursors to capture mouse events and show station names on hover
+        cursor = mplcursors.cursor(hover=True)
+
+        def on_hover(sel):
+            x, y = sel.target
+            station = self.get_station_by_coordinates(x, y)
+            if station is not None:
+                label = station.name
+                sel.annotation.set_text(label)
+                sel.annotation.set_visible(True)  # Show the annotation
+            else:
+                sel.annotation.set_visible(False)
+
+        cursor.connect("add", on_hover)
+
+        # Create checkboxes for trajects
+        traject_labels = [f'Traject {i}' for i in self.trajecten]
+        traject_checkboxes = CheckButtons(plt.axes([0.01, 0.01, 0.2, 0.2]),
+                                          traject_labels,
+                                          [True] * len(self.trajecten))
+
+        def update_visibility(label):
+            traject_index = int(label.split()[-1])  # Extract traject index from label
+            visibility = not all(line.get_visible() for line in traject_lines[traject_index - 1])
+            for line in traject_lines[traject_index - 1]:
+                line.set_visible(visibility)
+            plt.draw()
+
+        traject_checkboxes.on_clicked(update_visibility)
+
+        plt.show()
+    
+
+    def get_station_by_coordinates(self, x, y):
+        epsilon = 0.01
+        for station in self.stations:
+            if abs(station.x - x) < epsilon and abs(station.y - y) < epsilon:
+                return station
+        return None
 
 
     # Calculates and returns score.
