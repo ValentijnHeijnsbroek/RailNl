@@ -1,7 +1,6 @@
 from railnl import RailNL
 import random
-import math  # Import the math module for exp function
-from station import Station
+import math
 import copy
 from help_funtions import *
 from greedy import greedy_algorithm
@@ -9,10 +8,9 @@ from greedy import greedy_algorithm
 max_aantal_trajecten = 20
 max_aantal_minuten = 180
 
-
-def simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations = 1000):
-    rail_at_max_score = initialize_rail()
-    current_rail = initialize_rail()
+def hill_climber(iterations, greedy_iterations=1000):
+    rail_at_max_score = initialize_rail("Nationaal")
+    current_rail = initialize_rail("Nationaal")
     best_score = 0
 
     for iteration in range(iterations):
@@ -20,8 +18,6 @@ def simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations
         if iteration/iterations * 100 % 10 == 0:
             print(f"{iteration/iterations * 100}%")
   
-        current_temperature = temperature * math.exp(-cooling_rate * iteration)
-        
         # Generate a new solution
         new_rail = generate_new_solution(current_rail, greedy_iterations)
 
@@ -29,10 +25,9 @@ def simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations
         current_score = current_rail.get_score()
         new_score = new_rail.get_score()
 
-        # Decide whether to accept the new solution
-        if accept_solution(current_score, new_score, current_temperature):
+        # If the new solution has a higher score, update the current rail
+        if new_score > current_score:
             current_rail = copy.deepcopy(new_rail)
-
             # Update the best solution if needed
             if new_score > best_score:
                 best_score = new_score
@@ -44,7 +39,7 @@ def generate_new_solution(current_rail, greedy_iterations):
     if len(current_rail.trajecten) <= 1:
         new_rail = greedy_algorithm(greedy_iterations)
         # new_rail.print_output()
-        print("Greedy succesfully loaded, greedy has a score of: ", new_rail.get_score())
+        print("Greedy successfully loaded, greedy has a score of: ", new_rail.get_score())
     else:
         new_rail = copy.deepcopy(current_rail)
 
@@ -74,7 +69,6 @@ def generate_new_solution(current_rail, greedy_iterations):
 
     elif operation == 'delete_station':
         # Implement logic to delete a station from an existing traject
-        traject_index = random.randint(1, len(new_rail.trajecten))
         if new_rail.trajecten[traject_index].traject_stations:
             new_rail.trajecten[traject_index].delete_latest_station()
 
@@ -86,7 +80,6 @@ def generate_new_solution(current_rail, greedy_iterations):
         traject_index = 1
     elif len(new_rail.trajecten) > 1:
         traject_index = random.randint(1, len(new_rail.trajecten))
-
 
    # Delete the last two stations if the traject is longer than 3 stations, then pick a random station and a greedy station
     traject = new_rail.trajecten[traject_index]
@@ -108,26 +101,17 @@ def generate_new_solution(current_rail, greedy_iterations):
         
     return new_rail
 
-def accept_solution(current_score, new_score, temperature):
-    if new_score > current_score:
-        return True
-    else:
-        probability = math.exp((new_score - current_score) / temperature)
-        return random.uniform(0, 1) < probability
-
-# Set parameters for simulated annealing
+# Print and save the best rail from the hill climber
 
 
-
-
-def run_simulated_annealing(num_runs, temperature, cooling_rate, iterations, greedy_iterations = 1000):
+def run_hill_climber(num_runs, iterations, greedy_iterations=1000):
     best_rail = None
     best_score = 0
 
     for run in range(1, num_runs + 1):
         print(f"Run {run}/{num_runs}")
 
-        rail_at_max_score = simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations)
+        rail_at_max_score = hill_climber(iterations, greedy_iterations)
         current_score = rail_at_max_score.get_score()
 
         print(f"Score for run {run}: {current_score}")
@@ -138,24 +122,16 @@ def run_simulated_annealing(num_runs, temperature, cooling_rate, iterations, gre
 
     return best_rail
 
+# Set parameters for the hill climber
+hill_climber_iterations = 1000
+hill_climber_greedy_iterations = 1000
+num_runs_hill_climber = 10 # Specify the number of runs
 
-# Set parameters for the entire process
-num_runs = 10
-initial_temperature = 1000
-cooling_rate = 0.005
-iterations = 1000
-greedy_iterations = 1000
+# Run the hill climber algorithm and get the best rail
+best_rail_hill_climber = run_hill_climber(num_runs_hill_climber, hill_climber_iterations, hill_climber_greedy_iterations)
 
-# Run simulated annealing multiple times and get the best rail
-best_rail = run_simulated_annealing(num_runs, initial_temperature, cooling_rate, iterations, greedy_iterations)
-
-# Print and save the best rail
-if best_rail is not None:
-    print("Best Rail:")
-    best_rail.print_output()
-    best_rail.upload_output('output_simulated_annealing.csv')
-
-# rail_at_max_score = simulated_annealing(initial_temperature, cooling_rate, iterations)
-# rail_at_max_score.print_output()
-# rail_at_max_score.upload_output('output_simulated_annealing.csv')
-
+# Print and save the best rail from the hill climber
+if best_rail_hill_climber is not None:
+    print("Best Rail (Hill Climber):")
+    best_rail_hill_climber.print_output()
+    best_rail_hill_climber.upload_output('output_hill_climber.csv')

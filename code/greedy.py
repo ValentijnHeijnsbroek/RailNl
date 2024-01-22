@@ -39,7 +39,7 @@ def greedy_algorithm(herhalingen):
             greedy_at_max_score.trajecten = greedy.trajecten
         herhalingen -= 1
         # print progress
-        if herhalingen/totaal_herhalingen * 100 % 5 == 0:
+        if herhalingen/totaal_herhalingen * 100 % 10 == 0:
             print(f"{herhalingen/totaal_herhalingen * 100}%")
         greedy.trajecten = {}
     return greedy_at_max_score
