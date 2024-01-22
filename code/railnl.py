@@ -77,7 +77,15 @@ class RailNL():
 
     
     def plot_network(self):
-        # Read GeoJSON file for background (replace 'path/to/nl_regions.geojson' with the actual path)
+        """
+        creates a plot showing the the trajects with different lines and it also shows
+        the station with their corresponding name when hovering over it.
+        The user can also pick which trajects are shown or not using the checkboxes.
+
+        post: A plot with the Netherlands as background, the trajects shown with lines, and the 
+              stations are shown as points.
+        """
+        # Read GeoJSON file for background
         background_geojson_path = '../data/nl_regions.geojson'
         background_data = gpd.read_file(background_geojson_path)
 
@@ -98,7 +106,8 @@ class RailNL():
             for i in range(len(traject_stations) - 1):
                 station1 = traject_stations[i]
                 station2 = traject_stations[i + 1]
-
+                
+                # so that the lines are not on top of eachother
                 offset = 0.01 * (i % 2)
 
                 line, = ax.plot([station1.x, station2.x], [station1.y + offset, station2.y + offset],
@@ -131,13 +140,14 @@ class RailNL():
         # Use mplcursors to capture mouse events and show station names on hover
         cursor = mplcursors.cursor(hover=True)
 
+        # laat alleen de station namen zien wanneer de cursor er overheen gaat
         def on_hover(sel):
             x, y = sel.target
             station = self.get_station_by_coordinates(x, y)
             if station is not None:
                 label = station.name
                 sel.annotation.set_text(label)
-                sel.annotation.set_visible(True)  # Show the annotation
+                sel.annotation.set_visible(True)  # laat de stationnaam zien
             else:
                 sel.annotation.set_visible(False)
 
@@ -160,7 +170,7 @@ class RailNL():
 
         plt.show()
     
-
+    
     def get_station_by_coordinates(self, x, y):
         epsilon = 0.01
         for station in self.stations:
