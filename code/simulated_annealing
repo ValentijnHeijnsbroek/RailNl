@@ -131,6 +131,8 @@ def run_simulated_annealing(num_runs, temperature, cooling_rate, iterations, gre
         current_score = rail_at_max_score.get_score()
 
         print(f"Score for run {run}: {current_score}")
+        if run/num_runs * 100 % 10 == 0:
+            print(f"Best score at {run/num_runs * 100}% == {best_score}")
 
         if current_score > best_score:
             best_score = current_score
@@ -140,10 +142,10 @@ def run_simulated_annealing(num_runs, temperature, cooling_rate, iterations, gre
 
 
 # Set parameters for the entire process
-num_runs = 10
+num_runs = 1
 initial_temperature = 1000
 cooling_rate = 0.005
-iterations = 1000
+iterations = 2000
 greedy_iterations = 1000
 
 # Run simulated annealing multiple times and get the best rail

@@ -21,8 +21,8 @@ class RailNL():
         loads stations into 2 different lists one for the name and 
         the other into a list of station variables
         The station names also get saved inside of a dictionary connected to an empty list
-
         """
+        
         with open(station_filename, 'r') as file:
             reader = csv.reader(file)
             header = next(reader)  # Skip the header row if it exists
@@ -31,7 +31,6 @@ class RailNL():
                 y = float(row[1])
                 x = float(row[2])
                 station = Station(name, x, y)
-
                 self.stations.append(station)
 
     def load_connections(self, connection_filename):
