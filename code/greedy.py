@@ -5,7 +5,7 @@ import copy
 from help_funtions import *
 max_aantal_trajecten = 20
 max_aantal_minuten = 180
-min_aantal_trajecten = 5
+min_aantal_trajecten = 8
 
 def greedy_algorithm(herhalingen):
     totaal_herhalingen = herhalingen

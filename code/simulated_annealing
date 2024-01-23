@@ -10,7 +10,7 @@ from IPython.display import clear_output
 # highscore is 8651
 max_aantal_trajecten = 20
 max_aantal_minuten = 180
-
+max_iterations_without_improvement = 80
 
 def simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations = 1000):
     rail_at_max_score = initialize_rail()
@@ -21,6 +21,7 @@ def simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations
     best_scores_list = []
     iterations_list = []
     scores_list = []
+    iterations_without_improvement = 0
 
     for iteration in range(iterations):
         # Print progress of iterations
@@ -50,7 +51,13 @@ def simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations
                 best_iterations_list = iterations_list
                 best_scores_list = scores_list
                 rail_at_max_score.trajecten = copy.deepcopy(current_rail.trajecten)
-                
+                iterations_without_improvement = 0
+            else:
+                iterations_without_improvement += 1 
+        
+        if iterations_without_improvement >= max_iterations_without_improvement and iteration > 600:
+            print(f"Breaking out of the loop due to no improvement in {max_iterations_without_improvement} iterations.")
+            break
     plt.plot(best_iterations_list, best_scores_list, label="Score")
     plt.axvline(x=best_iteration, color='r', linestyle='--', label=f'Highest Score: {best_score}')
     plt.xlabel("Iterations")
@@ -58,6 +65,7 @@ def simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations
     plt.title("Simulated Annealing Progress")
     plt.legend()
     plt.savefig('Simulated_Annealing_process.png')
+    # plt.show()
     plt.close()
 
     return rail_at_max_score
@@ -144,10 +152,10 @@ def run_simulated_annealing(num_runs, temperature, cooling_rate, iterations, gre
 
 
 # Set parameters for the entire process
-num_runs = 5
+num_runs = 10
 initial_temperature = 1000
 cooling_rate = 0.005
-iterations = 1000
+iterations = 1500
 greedy_iterations = 1000
 
 # Run simulated annealing multiple times and get the best rail
