@@ -5,6 +5,7 @@ import copy
 from help_funtions import *
 max_aantal_trajecten = 20
 max_aantal_minuten = 180
+min_aantal_trajecten = 8
 
 def greedy_algorithm(herhalingen):
     totaal_herhalingen = herhalingen
@@ -12,7 +13,7 @@ def greedy_algorithm(herhalingen):
     greedy = initialize_rail("Nationaal")
     max_score = 0
     while herhalingen > 0:
-        aantal_trajecten = random.randint(1, max_aantal_trajecten)
+        aantal_trajecten = random.randint(min_aantal_trajecten, max_aantal_trajecten)
         for i in range(1, aantal_trajecten + 1):
             greedy.create_traject(i)
             begin_station = random.choice(greedy.stations)
