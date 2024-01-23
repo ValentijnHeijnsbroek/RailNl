@@ -2,6 +2,7 @@ from railnl import RailNL
 import random
 import math
 import copy
+import matplotlib.pyplot as plt 
 from help_funtions import *
 from greedy import greedy_algorithm
 
@@ -12,6 +13,9 @@ def hill_climber(iterations, greedy_iterations=1000):
     rail_at_max_score = initialize_rail("Nationaal")
     current_rail = initialize_rail("Nationaal")
     best_score = 0
+    scores_list = []
+    iterations_list = []
+
 
     for iteration in range(iterations):
         # Print progress of iterations
@@ -32,18 +36,28 @@ def hill_climber(iterations, greedy_iterations=1000):
             if new_score > best_score:
                 best_score = new_score
                 rail_at_max_score.trajecten = copy.deepcopy(current_rail.trajecten)
+                
+        scores_list.append(best_score)
+        iterations_list.append(iteration)
 
+    plt.plot(iterations_list, scores_list, label="Score")
+    plt.xlabel("Iterations")
+    plt.ylabel("Score")
+    plt.title("Hill Climber Progress")
+    plt.legend()
+    plt.savefig('Hill_Climber_process.png')
+    plt.close()
     return rail_at_max_score
 
 def generate_new_solution(current_rail, greedy_iterations):
     if len(current_rail.trajecten) <= 1:
         new_rail = greedy_algorithm(greedy_iterations)
         # new_rail.print_output()
-        print("Greedy successfully loaded, greedy has a score of: ", new_rail.get_score())
+        print("Greedy succesfully loaded, greedy has a score of: ", new_rail.get_score())
     else:
         new_rail = copy.deepcopy(current_rail)
 
-    operation = random.choice(['add_station', 'delete_station'])
+    operation = random.choice(['add_station', 'delete_station','substitute_stations'])
 
     traject_index = random.randint(1, len(new_rail.trajecten))
 
@@ -60,44 +74,31 @@ def generate_new_solution(current_rail, greedy_iterations):
         last_station = new_rail.trajecten[traject_index].last_station()
         # duration = last_station.get_duration(new_station)
         duration = last_station.get_duration(new_station)
-
         # Check if the new station can be added to the traject
         if new_station and new_rail.sum_time(traject_index) + duration <= max_aantal_minuten:
             new_rail.trajecten[traject_index].add_station_to_traject(new_station)
         else:
-            operation = 'delete_station'
+            operation = 'substitute_stations'
 
     elif operation == 'delete_station':
         # Implement logic to delete a station from an existing traject
+        traject_index = random.randint(1, len(new_rail.trajecten))
         if new_rail.trajecten[traject_index].traject_stations:
             new_rail.trajecten[traject_index].delete_latest_station()
-
-    # Randomly select a traject to modify
-    if len(new_rail.trajecten) == 1:
-        traject_index = 1
-    elif len(new_rail.trajecten) == 0:
-        new_rail.create_traject(1)
-        traject_index = 1
-    elif len(new_rail.trajecten) > 1:
-        traject_index = random.randint(1, len(new_rail.trajecten))
-
-   # Delete the last two stations if the traject is longer than 3 stations, then pick a random station and a greedy station
-    traject = new_rail.trajecten[traject_index]
-    if len(traject.traject_stations) > 3:
-        traject.delete_latest_station()
-        traject.delete_latest_station()
-        random_station = traject.random_connected_station()
-        if random_station:
-            traject.add_station_to_traject(random_station)
-        greedy_station_2 = greedy_decision(new_rail, traject_index)
-        if greedy_station_2:
-            traject.add_station_to_traject(greedy_station_2)
     
-    elif len(traject.traject_stations) <= 3:
-        traject.traject_stations = []
-        # traject.delete_latest_station()
-        # random_station = traject.random_connected_station()
-        # traject.add_station_to_traject(random_station)
+    elif operation == 'substitute_stations':
+        # logic to substitute the latest two stations from a trajectory with a random station and then a greedy station
+        traject_index = random.randint(1, len(new_rail.trajecten))
+        traject = new_rail.trajecten[traject_index]
+        if len(traject.traject_stations) >= 3:
+            traject.delete_latest_station()
+            traject.delete_latest_station()
+            random_station = traject.random_connected_station()
+            if random_station:
+                traject.add_station_to_traject(random_station)
+            greedy_station_2 = greedy_decision(new_rail, traject_index)
+            if greedy_station_2:
+                traject.add_station_to_traject(greedy_station_2)
         
     return new_rail
 
