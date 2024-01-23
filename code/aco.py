@@ -1,85 +1,152 @@
-from random import randint, random
+from random import *
 from railnl import RailNL
-from station import Station
-from traject import Traject
+import csv
 
 
 class Ant():
-    def __init__(self):
-        self.begin_station = None
+    def __init__(self, begin_station):
+        self.begin_station = begin_station
         self.current_station = self.begin_station
         self.traject = []
+        self.traject.append(self.current_station)
+    
+    def add_station(self, station):
+        self.traject.append(station)
+        self.current_station = station
+        
+    def is_bereden(self, station):
+        return station in self.traject
+    
+    def get_score(self, rail_network):
+        duration_traject = 0
+        T = 1
+        for i in range(len(self.traject) - 1):
+            station_1 = self.traject[i]
+            station_2 = self.traject[i+1]
+            if station_1.connections_durations[station_2]:
+                duration_traject += station_1.connections_durations[station_2]
+        
+        p = len(self.traject) / rail_network.amount_of_connections  # the fraction of the traveled connections (between 0 and 1)
+        K = p * 10000 - (T * 100 + duration_traject) 
+        return round(K, 2)
+        
+        
+    
+class ACO():
+    def __init__(self):
         self.pheromones = {}
         self.ants = []
+        self.current_station = None
     
 
-    def set_pheromones(self, rail_network):
-        rail_network.load_stations('StationsHolland.csv')
-        rail_network.load_connections('ConnectiesHolland.csv')  
-        for connection in rail_network.connections:
-            self.pheromones[connection] = 1.0
+        
+        
+    def set_pheromones(self, connection_filename):
+        with open(connection_filename, 'r') as file:
+            reader = csv.reader(file)
+            header = next(reader)
+            for row in reader:
+                station_1 = row[0]
+                station_2 = row[1]
+                self.pheromones[(station_1, station_2)] = 1
+        print("pheromones set", self.pheromones)
         
     def deploy_ants(self, rail_network, num_ants):
         for i in range(num_ants):
-            self.ants.append(Ant(rail_network.stations[randint(0, len(rail_network.stations) - 1)]))
+            ant = Ant(rail_network.stations[randint(0, len(rail_network.stations) - 1)])
+            self.ants.append(ant)
         return self.ants
+
+    def get_connections(self, station):
+        search_result = {key[0] if key[1] == station else key[1]: value for key, value in self.pheromones.items() if station in key}
+        return search_result
+        
     
-    def choose_next_station(self, rail_network, pheromones, max_stations):
-        list_possible_stations = [station for station in self.current_station.connections if not self.is_bereden(station)]
-        if len(self.traject) == max_stations:  
+    def choose_next_station(self, ant, pheromones, max_stations):
+        # Get all possible connections from the current station
+        possible_connections = [connection for connection in ant.current_station.connections if not ant.is_bereden(connection)]
+        if len(ant.traject) >= max_stations:
             return None
         
-        elif list_possible_stations:
-            possible_connections = []
-            for station in list_possible_stations:
-                possible_connections.append((self.current_station, station))
+        if possible_connections:
+            print("Possible connections:", possible_connections)
+            names_connections = [connection.name for connection in possible_connections]
+            print("current station:", ant.current_station.name)
+            print("Names connections:", names_connections)
+            print("Pheromones:", pheromones)
             
+            find_pheromones = self.get_connections(ant.current_station.name)
+            
+            print("Find pheromones:", find_pheromones)
             # Calculate the total pheromone level for all possible connections
-            total_pheromone = sum(pheromones[connection] for connection in possible_connections)
             
+            total_pheromone = sum(find_pheromones.values())
+            print("Total pheromone:", total_pheromone)
             # Calculate the probabilities for each possible connection based on pheromone levels
-            probabilities = [pheromones[connection] / total_pheromone for connection in possible_connections]
-            
+            probabilities = [find_pheromones[connection.name] / total_pheromone for connection in possible_connections]
+            print("Probabilities:", probabilities)
             # Choose the next connection based on the probabilities
-            next_connection = random.choices(possible_connections, probabilities)[0]
+            print("Possible connections:", possible_connections)
+            next_connection = choices(possible_connections, weights = probabilities)[0]
+            print("Next connection:", next_connection)
             
-            return next_connection[1]
+            return next_connection
         
             
         else:
             print("No connections")
             return None
         
-    def get_score_traject(self, rail_network):
-        duration_traject = 0 # Totale duur van het traject
-        T = 1 #het aantal  bereden trajecten (standaard 1)
-        for connection in range(len(self.traject) - 1):
-            duration_traject += rail_network.connections[self.traject[connection], self.traject[connection + 1]]
-        
-        p =  len(self.traject) / self.amount_of_connections  # de fractie van de bereden verbindingen (dus tussen 0 en 1)
-        K = p*10000 - (T*100 + duration_traject) 
-        return round(K, 2)
-    
     def update_pheromones(self, rail_network, evaporation_rate):
         best_solution = None
         best_score = 0
         for ant in self.ants:
-            if ant.get_score_traject(rail_network, ant.traject) > best_score:
-                best_score = ant.get_score_traject(rail_network, ant.traject)
+            if ant.get_score(rail_network) > best_score:
+                best_score = ant.get_score(rail_network)
                 best_solution = ant.traject
         # Evaporate pheromones on all connections
         for connection in self.pheromones:
             self.pheromones[connection] *= (1 - evaporation_rate)
         
         # Update pheromones on connections in the best solution
-        for i in range(len(best_solution) - 1):
-            connection = (best_solution[i], best_solution[i + 1])
-            self.pheromones[connection] += 1 / self.get_score_traject(rail_network, best_solution)
+        for connection in best_solution:
+            for i in range(len(best_solution) - 1):
+                connection = (ant.traject[i], ant.traject[i + 1])
+                self.pheromones[connection] += 1 / ant.get_score(rail_network)
 
 # Initialize parameters
 num_ants = 10
 num_iterations = 100
 evaporation_rate = 0.1
+
+#main loop
+if __name__ == "__main__":
+    rail_network = RailNL()
+    aco = ACO()
+    rail_network.load_stations('StationsHolland.csv')
+    rail_network.load_connections('ConnectiesHolland.csv')
+    aco.set_pheromones('ConnectiesHolland.csv')
+
+    for i in range(num_iterations):
+        ants = aco.deploy_ants(rail_network, num_ants)
+        
+        for ant in ants:
+            while ant.current_station is not None:
+                ant.current_station = aco.choose_next_station(ant, aco.pheromones, 10)
+                if ant.current_station is not None:
+                    ant.traject.append(ant.current_station)
+            
+            aco.update_pheromones(rail_network, evaporation_rate)
+            
+        # Print information after each iteration
+        print("Iteration:", i + 1)
+        for ant in ants:
+            print("Score:", ant.ant_get_score(rail_network))
+            print("Trajectory:", ant.traject)
+            print("Pheromones:", aco.pheromones)
+        print("------")
+
+
 
 
 
