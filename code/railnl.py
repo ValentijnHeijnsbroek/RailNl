@@ -186,12 +186,12 @@ class RailNL():
             plt.gca().get_legend().remove()
 
             # Explicitly add a new legend outside the checkboxes
-            plt.legend(handles=updated_line_handles, labels=updated_line_labels, loc='upper right', bbox_to_anchor=(4.9, 3.8))
+            plt.legend(handles=updated_line_handles, labels=updated_line_labels, loc='upper right', bbox_to_anchor=(4.8, 3.8))
             plt.draw()
         traject_checkboxes.on_clicked(update_visibility)
 
         # Move the legend to the upper right
-        plt.legend(handles=line_handles, labels=line_labels, loc='upper right', bbox_to_anchor=(4.9, 4))
+        plt.legend(handles=line_handles, labels=line_labels, loc='upper right', bbox_to_anchor=(4.8, 3.8))
 
         plt.show()
     
