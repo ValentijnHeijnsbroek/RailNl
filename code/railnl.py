@@ -211,21 +211,26 @@ class RailNL():
         """
         sum_min = 0 # Min het aantal minuten in alle trajecten samen.
         bereden_trajecten = 0
-        bereden_unique_station = set([])
+        bereden_unique_verbinding = set([])
         T = len(self.trajecten) #het aantal trajecten
         for traject_index in self.trajecten:
             sum_min += self.sum_time(traject_index)  # Berekent per traject de duration
-            bereden_trajecten += len(self.trajecten[traject_index].traject_stations)   # Bekijkt per traject  hoeveel verbindingen er worden gelezen (Dit zorgt er alleen nog voor dat verbindingen dubbelgeteld kunnen worden)
+            bereden_trajecten += len(self.trajecten[traject_index].traject_stations)   # Bekijkt per traject  hoeveel verbindingen er worden gelezen
+            #(Dit zorgt er alleen nog voor dat verbindingen dubbelgeteld kunnen worden)
             # If traject is empty, it does not get counted.
-            if len(self.trajecten[traject_index].traject_stations)== 0:
-                T = T - 1
-            bereden_unique_station.update(self.trajecten[traject_index].traject_stations)
+            for i in range(len(self.trajecten[traject_index].traject_stations) - 1):
+                station1 = self.trajecten[traject_index].traject_stations[i]
+                station2 = self.trajecten[traject_index].traject_stations[i + 1]
+                tuple1 = (station1.name, station2.name)
+                tuple2 = (station2.name, station1.name)
+                bereden_unique_verbinding.add(tuple1)
+                bereden_unique_verbinding.add(tuple2)
         
         if self.amount_of_connections == 0:
         # If there are no connections, return 0 for genetic algorithm
             return 0
-        p =  len(bereden_unique_station) / self.amount_of_connections  # de fractie van de bereden verbindingen (dus tussen 0 en 1)
-
+        p =  (len(bereden_unique_verbinding)/2) / self.amount_of_connections  # de fractie van de bereden verbindingen (dus tussen 0 en 1)
+        
         K = p*10000 - (T*100 + sum_min)
         
         return round(K, 2)
