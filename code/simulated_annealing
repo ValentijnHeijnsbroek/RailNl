@@ -58,15 +58,18 @@ def simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations
         if iterations_without_improvement >= max_iterations_without_improvement and iteration > 600:
             print(f"Breaking out of the loop due to no improvement in {max_iterations_without_improvement} iterations.")
             break
-    plt.plot(best_iterations_list, best_scores_list, label="Score")
-    plt.axvline(x=best_iteration, color='r', linestyle='--', label=f'Highest Score: {best_score}')
-    plt.xlabel("Iterations")
-    plt.ylabel("Score")
-    plt.title("Simulated Annealing Progress")
-    plt.legend()
-    plt.savefig('Simulated_Annealing_process.png')
-    # plt.show()
-    plt.close()
+    
+    #Show process of simulated annealig
+    # plt.plot(best_iterations_list, best_scores_list, label="Score")
+    # plt.axvline(x=best_iteration, color='r', linestyle='--', label=f'Highest Score: {best_score}')
+    # plt.xlabel("Iterations")
+    # plt.ylabel("Score")
+    # plt.title("Simulated Annealing Progress")
+    # plt.legend()
+    # plt.savefig('Simulated_Annealing_process.png')
+    # # plt.show()
+    # plt.close()
+
 
     return rail_at_max_score
 
@@ -133,13 +136,14 @@ def accept_solution(current_score, new_score, temperature):
 def run_simulated_annealing(num_runs, temperature, cooling_rate, iterations, greedy_iterations = 1000):
     best_rail = None
     best_score = 0
+    scores_list = []
 
     for run in range(1, num_runs + 1):
         print(f"Run {run}/{num_runs}")
 
         rail_at_max_score = simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations)
         current_score = rail_at_max_score.get_score()
-
+        scores_list.append(current_score)
         print(f"Score for run {run}: {current_score}")
         if run/num_runs * 100 % 10 == 0:
             print(f"Best score at {run/num_runs * 100}% == {best_score}")
@@ -147,12 +151,28 @@ def run_simulated_annealing(num_runs, temperature, cooling_rate, iterations, gre
         if current_score > best_score:
             best_score = current_score
             best_rail = copy.deepcopy(rail_at_max_score)
+    
+    # Show distribution
+    bin_width = 50
+    num_bins = int((max(scores_list) - min(scores_list)) / bin_width)
+    plt.figure(figsize=(10, 6))
+    plt.hist(scores_list, bins=num_bins, color='blue', edgecolor='black')
+    plt.axvline(x=best_score, color='red', linestyle='--', label=f'Highest Score: {best_score}')
+    plt.xlabel('Score')
+    plt.ylabel('Frequency')
+    plt.title(f'Distribution of Scores (Clustered within {bin_width} points)')
+    plt.legend()
+    plt.savefig('Score_Distribution_Clustered.png')
+
+
+
+
 
     return best_rail
 
 
 # Set parameters for the entire process
-num_runs = 10
+num_runs = 200
 initial_temperature = 1000
 cooling_rate = 0.005
 iterations = 1500
@@ -166,6 +186,7 @@ if best_rail is not None:
     print("Best Rail:")
     best_rail.print_output()
     best_rail.upload_output('output_simulated_annealing.csv')
+
 
 # rail_at_max_score = simulated_annealing(initial_temperature, cooling_rate, iterations)
 # rail_at_max_score.print_output()

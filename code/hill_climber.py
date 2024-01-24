@@ -40,13 +40,13 @@ def hill_climber(iterations, greedy_iterations=1000):
         scores_list.append(best_score)
         iterations_list.append(iteration)
 
-    plt.plot(iterations_list, scores_list, label="Score")
-    plt.xlabel("Iterations")
-    plt.ylabel("Score")
-    plt.title("Hill Climber Progress")
-    plt.legend()
-    plt.savefig('Hill_Climber_process.png')
-    plt.close()
+    # plt.plot(iterations_list, scores_list, label="Score")
+    # plt.xlabel("Iterations")
+    # plt.ylabel("Score")
+    # plt.title("Hill Climber Progress")
+    # plt.legend()
+    # plt.savefig('Hill_Climber_process.png')
+    # plt.close()
     return rail_at_max_score
 
 def generate_new_solution(current_rail, greedy_iterations):
@@ -108,12 +108,14 @@ def generate_new_solution(current_rail, greedy_iterations):
 def run_hill_climber(num_runs, iterations, greedy_iterations=1000):
     best_rail = None
     best_score = 0
+    scores_list = []
 
     for run in range(1, num_runs + 1):
         print(f"Run {run}/{num_runs}")
 
         rail_at_max_score = hill_climber(iterations, greedy_iterations)
         current_score = rail_at_max_score.get_score()
+        scores_list.append(current_score)
 
         print(f"Score for run {run}: {current_score}")
 
@@ -121,12 +123,24 @@ def run_hill_climber(num_runs, iterations, greedy_iterations=1000):
             best_score = current_score
             best_rail = copy.deepcopy(rail_at_max_score)
 
+    # bin_width = 50
+    # num_bins = int((max(scores_list) - min(scores_list)) / bin_width)
+    # plt.figure(figsize=(10, 6))
+    # plt.hist(scores_list, bins=num_bins, color='blue', edgecolor='black')
+    # plt.axvline(x=best_score, color='red', linestyle='--', label=f'Highest Score: {best_score}')
+    # plt.xlabel('Score')
+    # plt.ylabel('Frequency')
+    # plt.title(f'Distribution of Scores (Clustered within {bin_width} points)')
+    # plt.legend()
+    # plt.savefig('Score_Distribution_Clustered_Hill_climber.png')
+    # plt.show()
+
     return best_rail
 
 # Set parameters for the hill climber
 hill_climber_iterations = 1000
 hill_climber_greedy_iterations = 1000
-num_runs_hill_climber = 10 # Specify the number of runs
+num_runs_hill_climber = 50 # Specify the number of runs
 
 # Run the hill climber algorithm and get the best rail
 best_rail_hill_climber = run_hill_climber(num_runs_hill_climber, hill_climber_iterations, hill_climber_greedy_iterations)
