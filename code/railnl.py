@@ -77,12 +77,12 @@ class RailNL():
     
     def plot_network(self):
         """
-        creates a plot showing the the trajects with different lines and it also shows
+        creates a plot showing the trajects with different lines and it also shows
         the station with their corresponding name when hovering over it.
         The user can also pick which trajects are shown or not using the checkboxes.
 
         post: A plot with the Netherlands as background, the trajects shown with lines, and the 
-              stations are shown as points.
+            stations are shown as points.
         """
         # Read GeoJSON file for background
         background_geojson_path = '../data/nl_regions.geojson'
@@ -95,6 +95,7 @@ class RailNL():
         # Plot connections from trajecten
         line_styles = ['-', '--', '-.', ':']
         traject_lines = []  # Keep track of lines associated with each traject
+        traject_labels = []  # Keep track of unique traject labels for legend
         for traject_index in self.trajecten:
             traject_stations = self.trajecten[traject_index].traject_stations
             colorr = plt.cm.rainbow(traject_index / len(self.trajecten))
@@ -106,14 +107,16 @@ class RailNL():
                 station1 = traject_stations[i]
                 station2 = traject_stations[i + 1]
                 
-                # so that the lines are not on top of eachother
+                # so that the lines are not on top of each other
                 offset = 0.01 * (i % 2)
 
                 line, = ax.plot([station1.x, station2.x], [station1.y + offset, station2.y + offset],
-                         color=colorr, linestyle=style, linewidth=2, alpha=0.9)
+                        color=colorr, linestyle=style, linewidth=2, alpha=0.9, label=f'Traject {traject_index}')
                 lines.append(line)
 
             traject_lines.append(lines)
+            traject_labels.append(f'Traject {traject_index}')
+
 
         # Plot stations with explicit labels
         for station in self.stations:
@@ -139,7 +142,6 @@ class RailNL():
         # Use mplcursors to capture mouse events and show station names on hover
         cursor = mplcursors.cursor(hover=True)
 
-        # laat alleen de station namen zien wanneer de cursor er overheen gaat
         def on_hover(sel):
             x, y = sel.target
             station = self.get_station_by_coordinates(x, y)
@@ -155,17 +157,41 @@ class RailNL():
         # Create checkboxes for trajects
         traject_labels = [f'Traject {i}' for i in self.trajecten]
         traject_checkboxes = CheckButtons(plt.axes([0.01, 0.01, 0.2, 0.2]),
-                                          traject_labels,
-                                          [True] * len(self.trajecten))
+                                        traject_labels,
+                                        [True] * len(self.trajecten))
+
+        # Get handles and labels for lines (excluding scatter plot handles)
+        line_handles, line_labels = [], []
+        for lines, label in zip(traject_lines, traject_labels):
+            line_handles.append(lines[0])  # Only add the first line of each trajectory to the legend
+            line_labels.append(label)
 
         def update_visibility(label):
             traject_index = int(label.split()[-1])  # Extract traject index from label
+
+            # Toggle visibility of traject lines
             visibility = not all(line.get_visible() for line in traject_lines[traject_index - 1])
             for line in traject_lines[traject_index - 1]:
                 line.set_visible(visibility)
-            plt.draw()
 
+            # Update legend handles and labels
+            updated_line_handles = []
+            updated_line_labels = []
+            for line, lbl in zip(line_handles, line_labels):
+                if line.get_visible():
+                    updated_line_handles.append(line)
+                    updated_line_labels.append(lbl)
+
+            # Remove the existing legend
+            plt.gca().get_legend().remove()
+
+            # Explicitly add a new legend outside the checkboxes
+            plt.legend(handles=updated_line_handles, labels=updated_line_labels, loc='upper right', bbox_to_anchor=(4.9, 3.8))
+            plt.draw()
         traject_checkboxes.on_clicked(update_visibility)
+
+        # Move the legend to the upper right
+        plt.legend(handles=line_handles, labels=line_labels, loc='upper right', bbox_to_anchor=(4.9, 4))
 
         plt.show()
     
