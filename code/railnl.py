@@ -292,7 +292,7 @@ class RailNL():
         return self.amount_of_connections
 
         # Delete traject, and adjusts every traject index so that it is numbered from 1 to len(trajecten)
-     def delete_traject(self, traject_index):
+    def delete_traject(self, traject_index):
         if traject_index in self.trajecten:
             del self.trajecten[traject_index]
             for i in range(traject_index, len(self.trajecten) + 1):

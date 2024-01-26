@@ -63,7 +63,7 @@ class ACO():
         return search_result
         
     
-    def choose_next_station(self, ant, max_duration):
+    def choose_next_station(self, ant, max_duration, exploration_parameter):
     # Get all possible connections from the current station
         possible_connections = [connection for connection in ant.current_station.connections if not ant.is_bereden(connection)]
         
@@ -75,9 +75,13 @@ class ACO():
             # Calculate the total pheromone level for all possible connections
             total_pheromone = sum(filtered_pheromones.values())
             # Calculate the probabilities for each possible connection based on pheromone levels
-            probabilities = [find_pheromones[connection.name] / total_pheromone for connection in filtered_connections]
+            pheromone_probabilities = [find_pheromones[connection.name] / total_pheromone for connection in filtered_connections]
+            exploration_prob = 1 - exploration_parameter
+            exploration_weights = [exploration_prob / len(filtered_connections) for _ in filtered_connections]
+            
+            probabilities = [exploration_prob * p + exploration_parameter * r_prob for p, r_prob in zip(pheromone_probabilities, exploration_weights)]
             # Choose the next connection based on the probabilities
-            print("sum probabilities:", sum(probabilities))
+            # print("sum probabilities:", sum(probabilities))
             next_connection = choices(filtered_connections, weights=probabilities)[0]
             return next_connection
         else:
@@ -124,9 +128,9 @@ class ACO():
             self.duration_totaal += duration_traject
             # print("duration_totaal:", duration_totaal)
         # print("Unique connections:", self.unique_connections)   
-        print("length unique connections:", len(self.unique_connections))      
+        # print("length unique connections:", len(self.unique_connections))      
         p = len(self.unique_connections) / rail_network.amount_of_connections
-        print("p:", p)
+        # print("p:", p)
         k = p * 10000 - (len(self.ants) * 100 + self.duration_totaal)
         # print("duration_totaal:", duration_totaal)  
         return round(k, 2)
@@ -141,8 +145,9 @@ class ACO():
 # Initialize parameters
 
 num_iterations = 1000
-evaporation_rate = 0.05
+evaporation_rate = 0.01
 max_duration = 180
+exploration_parameter = 0.5
 
 
 #main loop
@@ -154,25 +159,31 @@ if __name__ == "__main__":
     aco.set_pheromones('ConnectiesNationaal.csv')
     best_score = 0
     best_netwerk = None
+    list_scores = []
     
 
     for i in range(num_iterations):
         num_ants = randint(7, 17)
         ants = aco.deploy_ants(rail_network, num_ants)
         aco.totaal_trajecten.clear()
+        
         for ant in ants:
             while ant.current_station is not None:
-                ant.current_station = aco.choose_next_station(ant, max_duration)
+                ant.current_station = aco.choose_next_station(ant, max_duration, exploration_parameter)
                 if ant.current_station is not None:
                     ant.traject.append(ant.current_station)
                     aco.update_unique_connections((ant.traject[-2].name, ant.traject[-1].name))
             
             aco.update_pheromones(rail_network, evaporation_rate)
             aco.totaal_trajecten[ant] = ant.traject
-            
+        exploration_parameter *= num_iterations/ (num_iterations + 1)
+        list_scores.append(aco.total_score())
+        avg_score = sum(list_scores) / len(list_scores)
+        print(f"{round(i / num_iterations * 100, 2)} %", avg_score)
+        
         # Print information after each iteration
-        print("Iteration:", i + 1)
-        print("length totaal trajecten", len(aco.totaal_trajecten))
+        # print("Iteration:", i + 1)
+        # print("length totaal trajecten", len(aco.totaal_trajecten))
         
         
         
@@ -184,12 +195,19 @@ if __name__ == "__main__":
         
         # print("Totaal trajecten:", aco.totaal_trajecten)
         score_totaal = aco.total_score()
-        print("Score totaal:", score_totaal)
-        print("duration_totaal", aco.duration_totaal)     
-        print("------")
+        # print("Score totaal:", score_totaal)
+        # print("duration_totaal", aco.duration_totaal)     
+        # print("------")
         if score_totaal > best_score:
             best_score = score_totaal
             best_netwerk = aco.totaal_trajecten
+            best_duration = aco.duration_totaal
+            best_iteration = i + 1
     print("Best score:", best_score)
-    print("pheromones:" , aco.pheromones)
+    print("Best duration:", best_duration)
+    print("Best iteration:", best_iteration)
+    for trajectory in best_netwerk.values():
+        station_names = [station.name for station in trajectory]
+        print(station_names)
+    # print("pheromones:" , aco.pheromones)
     # print("Best netwerk:", best_netwerk)
