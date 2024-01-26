@@ -291,14 +291,14 @@ class RailNL():
     def get_num_connections(self):
         return self.amount_of_connections
 
-    # Delete traject, and adjusts every traject index so that it is numbered from 1 to len(trajecten)
-    # def delete_traject(self, traject_index):
-    #     if traject_index in self.trajecten:
-    #         del self.trajecten[traject_index]
-    #         for i in range(traject_index, len(self.trajecten) + 1):
-    #             self.trajecten[i+1] = i
-    #     else:
-    #         print(f"ERROR: Traject {traject_index} does not exist.")
+        # Delete traject, and adjusts every traject index so that it is numbered from 1 to len(trajecten)
+     def delete_traject(self, traject_index):
+        if traject_index in self.trajecten:
+            del self.trajecten[traject_index]
+            for i in range(traject_index, len(self.trajecten) + 1):
+                self.trajecten[i+1] = i
+        else:
+            print(f"ERROR: Traject {traject_index} does not exist.")
 
     
    
