@@ -9,20 +9,36 @@ file_path = '../data/ConnectiesNationaal.csv'
 connection_data = pd.read_csv(file_path)
 
 # Constants
-max_aantal_minuten = 180
-max_aantal_trajecten = 20
-threshold_visit_frequency = 6  # Adjust as needed
-MAX_ATTEMPTS = 560
+max_aantal_minuten: int = 180
+max_aantal_trajecten: int = 20
+threshold_visit_frequency: int = 6  # Adjust as needed
+MAX_ATTEMPTS: int = 900
+min_stations: int = 2
 
 # Function to find central hubs
 def find_central_hubs(connection_data):
+    """
+    Makes a list of the stations with the most connections to the least connection
+
+    pre: connection dat of each station
+    post: central hubs list
+    """
     connection_counts = (connection_data['station1'].value_counts() + connection_data['station2'].value_counts()).fillna(0)
     central_hubs = connection_counts.sort_values(ascending=False).index.tolist()
     return central_hubs
 
-central_hubs = find_central_hubs(connection_data)
+# make the list global
+central_hubs: list = find_central_hubs(connection_data)
 
 def can_add_station(traject, station, visited_stations, station_visit_frequency):
+    """
+    Checks whether the station can be added to the the traject or not
+
+    pre: traject object, station object and a variable that checks how many time the station has
+        been in the rail
+    post: True or False 
+    
+    """
     if len(traject.traject_stations) > 0:
         last_station = traject.traject_stations[-1]
         if not ((connection_data['station1'] == last_station.name) & (connection_data['station2'] == station.name)).any() and \
@@ -35,6 +51,13 @@ def can_add_station(traject, station, visited_stations, station_visit_frequency)
     return True
 
 def update_uncovered_connections(uncovered_connections, traject):
+    """
+    When a connection has been made it has been covered and then that connection has to 
+    be removed from the uncovered list 
+
+    pre: uncovered connection set, and traject object
+    post: updated uncovered connection list for the rail
+    """
     if len(traject.traject_stations) >= 2:
         # Get the last two stations in the traject
         last_station = traject.traject_stations[-2]
@@ -53,6 +76,17 @@ def update_uncovered_connections(uncovered_connections, traject):
 
 
 def depth_first_search(rail, traject, traject_index, visited_stations, uncovered_connections, current_depth, max_depth, current_score, central_hubs):
+    """
+    Performs a depth-first search to add stations to a rail trajectory.
+    This function recursively explores potential stations to add, 
+    aiming to improve the overall score of the rail network.
+    
+    pre: rail object, traject object, traject index, 
+         visited_stations ser, uncovered connection set, current depth int
+         max depth int, current score float, and a central hub list.
+    post: returns True if adding a station improves the score and meets constraints, otherwise False.
+          updates the trajectory and uncovered connections as stations are added.
+    """
     if current_depth >= max_depth:
         return False
     station_visit_frequency = {}
@@ -81,7 +115,7 @@ def depth_first_search(rail, traject, traject_index, visited_stations, uncovered
             # Revert changes for the next iteration
             visited_stations.remove(next_station)
             traject.delete_latest_station()
-    if len(traject.traject_stations) < 3:
+    if len(traject.traject_stations) < min_stations:
         for i in range(len(traject.traject_stations)):
             traject.delete_latest_station()
         return False
@@ -94,8 +128,21 @@ def depth_first_search(rail, traject, traject_index, visited_stations, uncovered
 
     return score_improved
 
+# score list for histogram
 iteration_scores = []
 def iterative_depth_first(max_depth, iterations, central_hubs, no_improvement_threshold=1000):
+    """
+    Conducts an iterative depth-first search to optimize a network of rail trajectories. 
+    The function iterates over multiple attempts to construct an optimal set of trajectories
+    aiming to maximize a scoring function given constraints. 
+
+    pre: max depth int, iterations int, central hubs list, and a no improvement threshold
+
+    post: returns the best rail network configuration found after all iterations
+          when a better rail network has been found it changes the best rail into that one
+          when there is no improvement for a given amount of iterations the central hub list refreshes
+          stops trying to make a better railgiven a start station after a certain amount of attempts
+    """
     best_rail = None
     best_score = 0
     iterations_without_improvement = 0
@@ -132,7 +179,7 @@ def iterative_depth_first(max_depth, iterations, central_hubs, no_improvement_th
 
             traject_improved = depth_first_search(current_rail, new_traject, traject_index, visited_stations, uncovered_connections, 0, max_depth, 0, central_hubs)
             
-            if len(new_traject.traject_stations) >= 4:
+            if len(new_traject.traject_stations) >= min_stations:
                 valid_traject_count += 1
                 new_score = current_rail.get_score()
         
@@ -175,7 +222,7 @@ def iterative_depth_first(max_depth, iterations, central_hubs, no_improvement_th
     return best_rail
 
 # Example usage
-max_depth = 60
-iterations = 100
-no_improvement_threshold = 500
-best_rail = iterative_depth_first(max_depth, iterations, central_hubs, no_improvement_threshold)
+max_depth: int= 75
+iterations: int = 10000
+no_improvement_threshold: int = 5000
+best_rail: RailNL = iterative_depth_first(max_depth, iterations, central_hubs, no_improvement_threshold)
