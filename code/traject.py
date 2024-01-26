@@ -43,7 +43,8 @@ class Traject:
         if self.traject_stations:
             self.traject_stations.pop()
         else:
-            print("Cannot delete from an empty list.")
+            #print("Cannot delete from an empty list.")
+            pass
 
     # Returns a random connected station
     def random_connected_station(self):
