@@ -20,6 +20,9 @@ class RailNL():
         self.iterations_list = []
         self.scores_list = []
 
+        self.iterations_list = []
+        self.scores_list = []
+
     def load_stations(self, station_filename):
         """
         loads stations into 2 different lists one for the name and 
@@ -304,15 +307,6 @@ class RailNL():
         else:
             print(f"ERROR: Traject {traject_index} does not exist.")
 
-    
-   
-
-
-
-
-
-
-
 
 # Get the current directory of the script
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -323,41 +317,3 @@ data_directory = os.path.join(parent_directory, 'data')  # Change 'data' to the 
 # Set the working directory to the data directory
 os.chdir(data_directory)
 
-if __name__ == '__main__':
-    NoordHolland = RailNL()
-    NoordHolland.load_stations('StationsHolland.csv')
-    NoordHolland.load_connections('ConnectiesHolland.csv')
-
-    NoordHolland.create_traject(1)
-    NoordHolland.create_traject(2)
-    Amsterdam_Centraal = NoordHolland.get_station_by_name('Amsterdam Centraal')
-    Amsterdam_Sloterdijk = NoordHolland.get_station_by_name('Amsterdam Sloterdijk')
-    Haarlem = NoordHolland.get_station_by_name('Haarlem')
-
-    NoordHolland.trajecten[1].add_station_to_traject(Amsterdam_Centraal)
-    NoordHolland.trajecten[1].add_station_to_traject(Amsterdam_Sloterdijk)
-    print(Amsterdam_Centraal.get_duration(Amsterdam_Sloterdijk)  ) 
-
-    # print(NoordHolland.trajecten[1].traject_stations)
-    # print("test")
-    # print(len(NoordHolland.trajecten[2].traject_stations))
-
-    # print(len(NoordHolland.trajecten))
-    # print(NoordHolland.get_score())
-
-    #     assert rail_nl_instance.trajecten[1] == new_traject
-    # # assert rail_nl_instance.trajecten[1].traject_stations[0] == Amsterdam_Centraal
-    # # assert rail_nl_instance.trajecten[1].traject_stations[1] == Amsterdam_Sloterdijk
-
-    # NoordHolland.create_traject()
-    # print(NoordHolland.trajecten[0])
-    # first = NoordHolland.trajecten[0]
-    # Alkmaar = NoordHolland.stations[0]
-    # first.add_station_to_traject(Alkmaar)
-    # Hoorn = NoordHolland.get_station_by_name("Hoorn")
-    # first.add_station_to_traject(Hoorn)
-    # print(Hoorn.connections_durations)
-    # Delft = NoordHolland.get_station_by_name("Delft")
-    # first.add_station_to_traject(Delft)
-    # print(first.traject_stations)
-    # print(first.traject_stations)
