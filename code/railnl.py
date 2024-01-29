@@ -20,14 +20,15 @@ class RailNL():
         self.iterations_list = []
         self.scores_list = []
 
-        self.iterations_list = []
-        self.scores_list = []
 
     def load_stations(self, station_filename):
         """
         loads stations into 2 different lists one for the name and 
         the other into a list of station variables
         The station names also get saved inside of a dictionary connected to an empty list
+
+        pre: station_filename string
+        post: the station objects gets loaded inside of the self.stations list
         """
         
         with open(station_filename, 'r') as file:
@@ -46,7 +47,9 @@ class RailNL():
         each station it has inside of a list.
         It also adds the distance between the connected station as a float with the
         2 stations being the key for that
-        
+
+        pre: connection_filename string
+        post: station connection formed 
         """
         with open(connection_filename, 'r') as file:
             reader = csv.reader(file)
@@ -75,7 +78,13 @@ class RailNL():
                     self.amount_of_connections += 1
                     
         # using the name of the station to get the station variable 
-    def get_station_by_name(self, station_name):
+    def get_station_by_name(self, station_name: str):
+        """
+        uses the name of a station to give the station object
+
+        pre: station_name string
+        post: the station object or None depending if the station object with the station name exists 
+        """
         for station in self.stations:
             if station.name == station_name:
                 return station
@@ -204,6 +213,12 @@ class RailNL():
     
     
     def get_station_by_coordinates(self, x, y):
+        """
+        uses the coordinates to get the station object connected to it
+
+        pre: x and y floats 
+        post: return the station object or None, depending on if the station object exist or not
+        """
         epsilon = 0.01
         for station in self.stations:
             if abs(station.x - x) < epsilon and abs(station.y - y) < epsilon:
@@ -214,7 +229,12 @@ class RailNL():
     # Calculates and returns score.
     def get_score(self):
         """
-        Calculates the K score as defined on the case website, returns an integer
+        calculates the K score as defined on the case website, returns an integer
+        
+        post: calculates the score based on:
+              p: what perecentage of all the connections are covered
+              T: the amount of trajects inside of the RailNL
+              sum_min: de total time of all the trajects
         """
         sum_min = 0 # Min het aantal minuten in alle trajecten samen.
         bereden_trajecten = 0
@@ -244,15 +264,25 @@ class RailNL():
     
     def create_traject(self, traject_index):
         """
-        Create a empty traject
+        creates a new empty traject and adds a traject_index to it
+
+        pre: traject index integer
+        post: an empty traject with a traject_index connected to it inside the dictionary
         """
         traject = Traject()
+    
         # append the traject into the trajecten list
         self.trajecten[traject_index] = traject
         
         return traject
     
     def sum_time(self, traject_index):
+        """
+        calculates the sum time of the traject
+
+        pre: traject index 
+        post: the total duration of the traject 
+        """
         
         duration = 0
 
@@ -267,6 +297,12 @@ class RailNL():
 
     # Saves output to csv file.
     def upload_output(self, output_filename):
+        """
+        uploads the output inside the file_name 
+
+        pre: the outputname of the file name which is a string
+        post: file gets created with the output and score
+        """
         with open(output_filename, 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(['train', 'stations'])
@@ -278,6 +314,11 @@ class RailNL():
     
     # Prints example output
     def print_output(self):
+        """
+        prints out the example output with the score and the total time for each traject
+
+        post: output gets printed inside the terminal
+        """
         for j in range(1, len(self.trajecten) +1 ):
             if self.trajecten[j].traject_stations == []:
                 continue
@@ -291,15 +332,30 @@ class RailNL():
     
     # Method that clears all the trajects of the railnl instance.
     def clear_trajecten(self):
+        """
+        gets rid of all trajects inside the railnl
+
+        post: self.trajecten gets emptied
+        """
         self.trajecten = {}
 
 
-    
     def get_num_connections(self):
+        """
+        looks at how many total connections there are from the connections file 
+
+        post: self.amount_of_connections
+        """
         return self.amount_of_connections
 
         # Delete traject, and adjusts every traject index so that it is numbered from 1 to len(trajecten)
     def delete_traject(self, traject_index):
+        """
+        deletes a specific traject when a traject_index is given
+
+        pre: traject_index integer
+        post: the specific traject gets deleted 
+        """
         if traject_index in self.trajecten:
             del self.trajecten[traject_index]
             for i in range(traject_index, len(self.trajecten) + 1):
