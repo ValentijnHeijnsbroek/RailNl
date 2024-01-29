@@ -144,9 +144,9 @@ class ACO:
 num_iterations: int = 10000
 evaporation_rate: float = 0.02
 max_duration: int = 180
-exploration_parameter: float = 0.5
-min_trajecten: int = 2
-max_trajecten: int = 10
+exploration_parameter: float = 0.99
+min_trajecten: int = 6
+max_trajecten: int = 16
 
 # main loop
 if __name__ == "__main__":
@@ -159,9 +159,17 @@ if __name__ == "__main__":
     best_netwerk: Union[None, Dict[Ant, List['Station']]] = None
     best_duration: int = 0
     list_scores: List[float] = []
+    best_scores_num_traject: dict = {}
+    for i in range(1, 21):
+        best_scores_num_traject[i] = 0
+    
 
     for i in range(num_iterations):
-        num_ants = randint(min_trajecten, max_trajecten)
+        # num_ants = randint(min_trajecten, max_trajecten)
+        if i < num_iterations / 2:
+            num_ants = 20 - round(i / (num_iterations / 20))
+        else:
+            num_ants = randint(9, 16)
         ants = aco.deploy_ants(rail_network, num_ants)
         aco.totaal_trajecten.clear()
 
@@ -174,11 +182,12 @@ if __name__ == "__main__":
 
             aco.update_pheromones(rail_network, evaporation_rate)
             aco.totaal_trajecten[ant] = ant.traject
-
+            # print(ant.get_duration())
         exploration_parameter *= num_iterations / (num_iterations + 1)
         list_scores.append(aco.total_score())
         avg_score = sum(list_scores) / len(list_scores)
-        print(f"{round(i / num_iterations * 100, 2)} %", avg_score)
+        if i % 10 == 0:
+            print(f"{round(i / num_iterations * 100, 2)} %", avg_score)
 
         for ant, trajectory in aco.totaal_trajecten.items():
             station_names = [station.name for station in trajectory]
@@ -189,9 +198,14 @@ if __name__ == "__main__":
             best_netwerk = aco.totaal_trajecten
             best_duration = aco.duration_totaal
             best_iteration = i + 1
+        if score_totaal > best_scores_num_traject[len(aco.totaal_trajecten)]:
+            best_scores_num_traject[len(aco.totaal_trajecten)] = score_totaal
+            
+        
     print("Best score:", best_score)
     print("Best duration:", best_duration)
     print("Best iteration:", best_iteration)
     for trajectory in best_netwerk.values():
         station_names = [station.name for station in trajectory]
         print(station_names)
+    print(best_scores_num_traject)
