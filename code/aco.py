@@ -141,12 +141,15 @@ class ACO:
 
 # Initialize parameters
 
-num_iterations: int = 10000
-evaporation_rate: float = 0.02
+num_iterations: int = 50000
+evaporation_rate: float = 0.001
 max_duration: int = 180
-exploration_parameter: float = 0.99
+exploration_parameter: float = 0.5
 min_trajecten: int = 6
-max_trajecten: int = 16
+max_trajecten: int = 20
+end_random_iterations: int = 500
+calculations_done: bool = False
+threshold: int = 10000
 
 # main loop
 if __name__ == "__main__":
@@ -160,16 +163,22 @@ if __name__ == "__main__":
     best_duration: int = 0
     list_scores: List[float] = []
     best_scores_num_traject: dict = {}
+    best_score_not_changed: int = 0
     for i in range(1, 21):
         best_scores_num_traject[i] = 0
     
 
     for i in range(num_iterations):
         # num_ants = randint(min_trajecten, max_trajecten)
-        if i < num_iterations / 2:
-            num_ants = 20 - round(i / (num_iterations / 20))
+        if i < end_random_iterations:
+            # num_ants = 20 - round(i / (num_iterations / 20))
+            num_ants = randint(min_trajecten, max_trajecten)
         else:
-            num_ants = randint(9, 16)
+            if not calculations_done:
+                sum_scores = sum(best_scores_num_traject.values())
+                weights = [score / sum_scores for score in best_scores_num_traject.values()]
+                calculations_done = True
+            num_ants = choices(list(best_scores_num_traject.keys()), weights=weights)[0]    
         ants = aco.deploy_ants(rail_network, num_ants)
         aco.totaal_trajecten.clear()
 
@@ -183,21 +192,29 @@ if __name__ == "__main__":
             aco.update_pheromones(rail_network, evaporation_rate)
             aco.totaal_trajecten[ant] = ant.traject
             # print(ant.get_duration())
-        exploration_parameter *= num_iterations / (num_iterations + 1)
+        exploration_parameter = max(0.1, exploration_parameter * 0.9999)
         list_scores.append(aco.total_score())
         avg_score = sum(list_scores) / len(list_scores)
         if i % 10 == 0:
-            print(f"{round(i / num_iterations * 100, 2)} %", avg_score)
+            print(f"{round(i / num_iterations * 100, 2)} %", avg_score, best_score, best_score_not_changed, exploration_parameter)
 
         for ant, trajectory in aco.totaal_trajecten.items():
             station_names = [station.name for station in trajectory]
 
         score_totaal = aco.total_score()
         if score_totaal > best_score:
+            prev_best_score = best_score
             best_score = score_totaal
             best_netwerk = aco.totaal_trajecten
             best_duration = aco.duration_totaal
             best_iteration = i + 1
+            best_score_not_changed = 0
+        elif i > end_random_iterations:
+            best_score_not_changed += 1
+        if best_score_not_changed > threshold or best_score - prev_best_score < 10:
+            print("Best score not changed for 1000 iterations")
+            break
+         
         if score_totaal > best_scores_num_traject[len(aco.totaal_trajecten)]:
             best_scores_num_traject[len(aco.totaal_trajecten)] = score_totaal
             
