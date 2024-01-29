@@ -11,9 +11,9 @@ connection_data = pd.read_csv(file_path)
 # Constants
 max_aantal_minuten: int = 180
 max_aantal_trajecten: int = 20
-threshold_visit_frequency: int = 6  # Adjust as needed
-MAX_ATTEMPTS: int = 900
-min_stations: int = 2
+threshold_visit_frequency: int = 9  # Adjust as needed
+MAX_ATTEMPTS: int = 50
+min_stations: int = 3
 
 # Function to find central hubs
 def find_central_hubs(connection_data):
@@ -39,6 +39,12 @@ def can_add_station(traject, station, visited_stations, station_visit_frequency)
     post: True or False 
     
     """
+
+    if len(traject.traject_stations) > 0:
+        last_station = traject.traject_stations[-1]
+        if last_station.name == station.name:
+            return False
+            
     if len(traject.traject_stations) > 0:
         last_station = traject.traject_stations[-1]
         if not ((connection_data['station1'] == last_station.name) & (connection_data['station2'] == station.name)).any() and \
@@ -169,7 +175,8 @@ def iterative_depth_first(max_depth, iterations, central_hubs, no_improvement_th
             new_traject = current_rail.create_traject(traject_index)
             
             if central_hubs:
-                start_station_name = central_hubs.pop()
+                start_station_name = random.choice(central_hubs)
+                central_hubs.remove(start_station_name)
                 start_station = next((s for s in current_rail.stations if s.name == start_station_name), None)
             else:
                 start_station = random.choice(current_rail.stations)
@@ -223,6 +230,6 @@ def iterative_depth_first(max_depth, iterations, central_hubs, no_improvement_th
 
 # Example usage
 max_depth: int= 75
-iterations: int = 10000
-no_improvement_threshold: int = 5000
+iterations: int = 100
+no_improvement_threshold: int = 150
 best_rail: RailNL = iterative_depth_first(max_depth, iterations, central_hubs, no_improvement_threshold)
