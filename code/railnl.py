@@ -16,6 +16,10 @@ class RailNL():
         self.score = 10
         self.trajecten = {}
 
+        # For visualizatio purposes
+        self.iterations_list = []
+        self.scores_list = []
+
     def load_stations(self, station_filename):
         """
         loads stations into 2 different lists one for the name and 
