@@ -5,9 +5,9 @@ import copy
 from help_funtions import *
 max_aantal_trajecten = 20
 max_aantal_minuten = 180
-min_aantal_trajecten = 6
+#Toevoegen dat traject begint bij een station met weinig verbindingen bijv
 
-def greedy_algorithm(herhalingen):
+def greedy_algorithm(herhalingen, min_aantal_trajecten = 5):
     totaal_herhalingen = herhalingen
     greedy_at_max_score = initialize_rail("Nationaal")
     greedy = initialize_rail("Nationaal")
@@ -32,22 +32,15 @@ def greedy_algorithm(herhalingen):
                     break
 
         # for own reference if highscore is beaten
-        if greedy.get_score() > 7300.14:
-            print(greedy.get_score())
-        # If the score is higher than the max score, save trajecten
         if greedy.get_score() > max_score:
             max_score = greedy.get_score()
             greedy_at_max_score.trajecten = greedy.trajecten
         herhalingen -= 1
         # print progress
-        if herhalingen/totaal_herhalingen * 100 % 10 == 0:
-            print(f"{herhalingen/totaal_herhalingen * 100}%")
+        # if herhalingen/totaal_herhalingen * 100 % 25 == 0:
+        #     print(f"{herhalingen/totaal_herhalingen * 100}%")
         greedy.trajecten = {}
     return greedy_at_max_score
 
 # greedy = greedy_algorithm(10000)
 # greedy.print_output()
-greedy = greedy_algorithm(1)
-K, T = greedy.get_score()
-print(T)
-print(len(greedy.trajecten))
