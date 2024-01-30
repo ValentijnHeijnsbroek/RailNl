@@ -1,51 +1,64 @@
 from railnl import RailNL
 import random
-import math  # Import the math module for exp function
+import math
 from station import Station
+from traject import Traject
 import copy
+import matplotlib.pyplot as plt
+from itertools import product
 from help_funtions import *
 from greedy import greedy_algorithm
-import matplotlib.pyplot as plt
-from IPython.display import clear_output
-from itertools import product
-from random_algo import random_algorithm
 
-max_aantal_trajecten = 20
-max_aantal_minuten = 180
-max_iterations_without_improvement = 3000
+"""
+Simulated Annealing Algorithm for Rail Network Optimization
 
+This script implements the simulated annealing algorithm to optimize a rail network configuration. 
+The optimization includes adding, deleting, and substituting stations in trajectories to maximize the overall score. 
+The algorithm uses a greedy algorithm to get a base state.
 
-def simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations = 1000, min_aantal_trajecten = 5, new_solution_iterations = 1):
-    rail_at_max_score = initialize_rail("Nationaal")
-    current_rail = initialize_rail("Nationaal")
-    best_score = 0
-    iterations_list = []
-    scores_list = []
-    iterations_without_improvement = 0
+"""
+
+max_aantal_trajecten: int = 20
+max_aantal_minuten: int = 180
+max_iterations_without_improvement: int = 3000
+
+def simulated_annealing(temperature: float, cooling_rate: float, iterations: int, 
+                        greedy_iterations: int = 1000, min_aantal_trajecten: int = 5, 
+                        new_solution_iterations: int = 1) -> RailNL:
+    """
+    Run simulated annealing algorithm.
+
+    Args:
+    - temperature (float): Initial temperature for simulated annealing
+    - cooling_rate (float): Cooling rate for simulated annealing
+    - iterations (int): Number of iterations for simulated annealing
+    - greedy_iterations (int): Number of iterations for the greedy algorithm within each iteration of simulated annealing
+    - min_aantal_trajecten (int): Minimum number of trajectories
+    - new_solution_iterations (int): Number of iterations to generate a new solution
+
+    Returns:
+    - RailNL: Best RailNL object obtained through simulated annealing
+    """
+    rail_at_max_score: RailNL = initialize_rail("Nationaal")
+    current_rail: RailNL = initialize_rail("Nationaal")
+    best_score: int = 0
+    iterations_list: list[int] = []
+    scores_list: list[int] = []
+    iterations_without_improvement: int = 0
 
     for iteration in range(iterations):
-        # Print progress of iterations
-        # if iteration/iterations * 100 % 50 == 0:
-            # print(f"Progress: {iteration / iterations * 100:.2f}%")
-            # print(f"Best score: {best_score}")  
-  
-        current_temperature = temperature * math.exp(-cooling_rate * iteration)
+        current_temperature: float = temperature * math.exp(-cooling_rate * iteration)
 
-
-
-        
         # Generate a new solution
         for i in range(new_solution_iterations):
             if i == 0:
-                new_rail = generate_new_solution(current_rail, greedy_iterations, min_aantal_trajecten)
+                new_rail: RailNL = generate_new_solution(current_rail, greedy_iterations, min_aantal_trajecten)
             else:
-                new_rail = generate_new_solution(new_rail, greedy_iterations, min_aantal_trajecten)
-
-    
+                new_rail: RailNL = generate_new_solution(new_rail, greedy_iterations, min_aantal_trajecten)
 
         # Calculate scores
-        current_score = current_rail.get_score()
-        new_score = new_rail.get_score()
+        current_score: int = current_rail.get_score()
+        new_score: int = new_rail.get_score()
 
         iterations_list.append(iteration)
         scores_list.append(new_score)
@@ -64,45 +77,49 @@ def simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations
                 best_score = new_score
                 rail_at_max_score.trajecten = current_rail.trajecten
                 iterations_without_improvement = 0
-
-                # Plot only when a new best score is achieved
             else:
                 iterations_without_improvement += 1 
         
         if iterations_without_improvement >= max_iterations_without_improvement and iteration > 1000:
             print(f"Breaking out of the loop due to no improvement in {max_iterations_without_improvement} iterations.")
             break
+    
     # For plotting purposes
     rail_at_max_score.iterations_list = iterations_list
     rail_at_max_score.scores_list = scores_list
     return rail_at_max_score
 
-def generate_new_solution(current_rail, greedy_iterations, min_aantal_trajecten):
+def generate_new_solution(current_rail: RailNL, greedy_iterations: int, min_aantal_trajecten: int) -> RailNL:
+    """
+    Generate a new solution based on the current rail.
+
+    Args:
+    - current_rail (RailNL): Current RailNL object
+    - greedy_iterations (int): Number of iterations for the greedy algorithm
+    - min_aantal_trajecten (int): Minimum number of trajectories
+
+    Returns:
+    - RailNL: New RailNL object
+    """
     if len(current_rail.trajecten) <= 1:
-        new_rail = greedy_algorithm(greedy_iterations, min_aantal_trajecten)
-        # new_rail = random_algorithm(greedy_iterations)
-        print("Greedy succesfully loaded, greedy has a score of: ", new_rail.get_score())
+        new_rail: RailNL = greedy_algorithm(greedy_iterations, min_aantal_trajecten)
+        print("Greedy successfully loaded, greedy has a score of: ", new_rail.get_score())
     else:
-        new_rail = copy.deepcopy(current_rail)
+        new_rail: RailNL = copy.deepcopy(current_rail)
         
+    operation: str = random.choice(['add_station', 'delete_station', 'substitute_stations'])
+    traject_index: int = random.randint(1, len(new_rail.trajecten))
 
-    operation = random.choice(['add_station', 'delete_station','substitute_stations'])
-
-    traject_index = random.randint(1, len(new_rail.trajecten))
-
-    #if selected traject is empty, add a random station
+    # If selected traject is empty, add a random station
     if new_rail.trajecten[traject_index].traject_stations == []:
-        begin_station = random.choice(new_rail.stations)
+        begin_station: Station = random.choice(new_rail.stations)
         new_rail.trajecten[traject_index].add_station_to_traject(begin_station)
-
     
     if operation == 'add_station':
-        # Implement logic to add a station to an existing traject
+        new_station: Station = new_rail.trajecten[traject_index].random_connected_station()
+        last_station: Station = new_rail.trajecten[traject_index].last_station()
+        duration: float = last_station.get_duration(new_station)
 
-        new_station = new_rail.trajecten[traject_index].random_connected_station()
-        last_station = new_rail.trajecten[traject_index].last_station()
-        # duration = last_station.get_duration(new_station)
-        duration = last_station.get_duration(new_station)
         # Check if the new station can be added to the traject
         if new_station and new_rail.sum_time(traject_index) + duration <= max_aantal_minuten:
             new_rail.trajecten[traject_index].add_station_to_traject(new_station)
@@ -110,46 +127,81 @@ def generate_new_solution(current_rail, greedy_iterations, min_aantal_trajecten)
             operation = 'substitute_stations'
 
     elif operation == 'delete_station':
-        # Implement logic to delete a station from an existing traject
         traject_index = random.randint(1, len(new_rail.trajecten))
         if new_rail.trajecten[traject_index].traject_stations:
             new_rail.trajecten[traject_index].delete_latest_station()
     
     elif operation == 'substitute_stations':
-        # logic to substitute the latest two stations from a trajectory with a random station and then a greedy station
         traject_index = random.randint(1, len(new_rail.trajecten))
-        traject = new_rail.trajecten[traject_index]
+        traject: Traject = new_rail.trajecten[traject_index]
+
         if len(traject.traject_stations) >= 3:
             traject.delete_latest_station()
             traject.delete_latest_station()
-            random_station = traject.random_connected_station()
+            random_station: Station = traject.random_connected_station()
+
             if random_station:
                 traject.add_station_to_traject(random_station)
-            greedy_station_2 = greedy_decision(new_rail, traject_index)
+
+            greedy_station_2: Station = greedy_decision(new_rail, traject_index)
+            
             if greedy_station_2:
                 traject.add_station_to_traject(greedy_station_2)
-        
+    
     return new_rail
 
-def accept_solution(current_score, new_score, temperature):
+def accept_solution(current_score: int, new_score: int, temperature: float) -> bool:
+    """
+    Accepts or rejects a new solution based on the Metropolis criterion.
+
+    Args:
+    - current_score (int): Current score
+    - new_score (int): New score
+    - temperature (float): Current temperature
+
+    Returns:
+    - bool: True if the new solution is accepted, False otherwise
+    """
     if new_score > current_score:
         return True
     else:
-        probability = math.exp((new_score - current_score) / temperature)
+        probability: float = math.exp((new_score - current_score) / temperature)
         return random.uniform(0, 1) < probability
     
-def run_simulated_annealing(num_runs, temperature, cooling_rate, iterations, greedy_iterations = 1000, min_aantal_trajecten = 5, new_solution_iterations = 1):
-    best_rail = None
-    best_score = 0
-    scores_list = []
+def run_simulated_annealing(num_runs: int, temperature: float, cooling_rate: float, iterations: int, 
+                            greedy_iterations: int = 1000, min_aantal_trajecten: int = 5, 
+                            new_solution_iterations: int = 1) -> RailNL:
+    """
+    Run simulated annealing multiple times and return the best rail.
+
+    Args:
+    - num_runs (int): Number of runs
+    - temperature (float): Initial temperature for simulated annealing
+    - cooling_rate (float): Cooling rate for simulated annealing
+    - iterations (int): Number of iterations for simulated annealing
+    - greedy_iterations (int): Number of iterations for the greedy algorithm within each iteration of simulated annealing
+    - min_aantal_trajecten (int): Minimum number of trajectories
+    - new_solution_iterations (int): Number of iterations to generate a new solution
+
+    Returns:
+    - RailNL: Best RailNL object obtained through simulated annealing
+    """
+    best_rail: RailNL = None
+    best_score: int = 0
+    scores_list: list[int] = []
 
     for run in range(1, num_runs + 1):
         print(f"Run {run}/{num_runs}, best score == {best_score}")
 
-        rail_at_max_score = simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations, min_aantal_trajecten= min_aantal_trajecten, new_solution_iterations= new_solution_iterations)
-        current_score = rail_at_max_score.get_score()
+        rail_at_max_score: RailNL = simulated_annealing(
+            temperature, cooling_rate, iterations, greedy_iterations, 
+            min_aantal_trajecten=min_aantal_trajecten, new_solution_iterations=new_solution_iterations
+        )
+        current_score: int = rail_at_max_score.get_score()
         scores_list.append(current_score)
-        print(f"Score for run {run}:                                   {current_score}")
+
+        print(f"Score for run {run}: {current_score}")
+
         if run/num_runs * 100 % 10 == 0:
             print(f"Best score at {run/num_runs * 100}% == {best_score}")
 
@@ -158,8 +210,9 @@ def run_simulated_annealing(num_runs, temperature, cooling_rate, iterations, gre
             best_rail = copy.deepcopy(rail_at_max_score)
 
     # Iteration and scores list for visualization
-    iterations_process_list =best_rail.iterations_list
-    scores_process_list = best_rail.scores_list
+    iterations_process_list: list[int] = best_rail.iterations_list
+    scores_process_list: list[int] = best_rail.scores_list
+
     plt.figure(figsize=(10, 6))
     plt.plot(iterations_process_list, scores_process_list, label="Score")
     plt.xlabel("Iterations")
@@ -172,11 +225,12 @@ def run_simulated_annealing(num_runs, temperature, cooling_rate, iterations, gre
 
     # Calculate average score
     if num_runs > 5:   
-        average_score = sum(scores_list) / len(scores_list)
+        average_score: float = sum(scores_list) / len(scores_list)
 
         # Show distribution
-        bin_width = 50
-        num_bins = int((max(scores_list) - min(scores_list)) / bin_width)
+        bin_width: int = 50
+        num_bins: int = int((max(scores_list) - min(scores_list)) / bin_width)
+
         plt.figure(figsize=(10, 6))
         plt.hist(scores_list, bins=num_bins, color='blue', edgecolor='black')
         plt.axvline(x=best_score, color='red', linestyle='--', label=f'Highest Score: {best_score}')
@@ -188,36 +242,28 @@ def run_simulated_annealing(num_runs, temperature, cooling_rate, iterations, gre
 
     return best_rail
 
-
-# Set parameters for the entire process
-num_runs = 50
-initial_temperature = 1000
-cooling_rate = 0.005
-iterations = 1500
-min_aantal_trajecten = 10
-greedy_iterations = 200
-new_solution_iterations = 1
-
-
 def perform_grid_search():
-    initial_temperatures = [800, 1000, 1200]
-    cooling_rates = [0.005, 0.004, 0.003]
+    """
+    Perform a grid search for simulated annealing parameters.
+    """
+    initial_temperatures: list[int] = [600, 800, 1000, 1200]
+    cooling_rates: list[float] = [0.005, 0.004, 0.003]
 
     # Results dictionary to store the best rail for each parameter combination
-    results = {}
+    results: dict[tuple[int, float], tuple[RailNL, int]] = {}
 
     for temp, rate in product(initial_temperatures, cooling_rates):
         print(f"Testing parameters: Initial Temperature = {temp}, Cooling Rate = {rate}")
         
         # Run simulated annealing multiple times and get the best rail for each combination
-        best_rail = run_simulated_annealing(
+        best_rail: RailNL = run_simulated_annealing(
             num_runs=200,
             temperature=temp,
             cooling_rate=rate,
             iterations=1500,
             greedy_iterations=300,
             min_aantal_trajecten=10,
-            new_solution_iterations=1
+            new_solution_iterations=2
         )
 
         # Store the best rail and its score in the results dictionary
@@ -234,24 +280,29 @@ def perform_grid_search():
     best_params, (best_rail, best_score) = max(results.items(), key=lambda x: x[1][1])
     print(f"\nBest Rail (Parameters: Initial Temperature = {best_params[0]}, Cooling Rate = {best_params[1]}):")
     print(f"Score: {best_score}")
-    
-    
-
 
 perform_grid_search()
 
+num_runs = 50
+initial_temperature = 10000
+cooling_rate = 0.005
+iterations = 1500
+min_aantal_trajecten = 10
+greedy_iterations = 200
+new_solution_iterations = 1
+
 
 # Run simulated annealing multiple times and get the best rail
-# best_rail = run_simulated_annealing(num_runs, initial_temperature, cooling_rate, iterations, greedy_iterations, min_aantal_trajecten, new_solution_iterations = new_solution_iterations)
+best_rail = run_simulated_annealing(num_runs, initial_temperature, cooling_rate, iterations, greedy_iterations, min_aantal_trajecten, new_solution_iterations = new_solution_iterations)
 
-# # Print and save the best rail
-# if best_rail is not None:
-#     print("Best Rail:")
-#     if(best_rail.get_score() > 6735):
-#         print("New HighScore!")
-#         best_rail.print_output()
-#         best_rail.upload_output('Highscore_simulated_annealing.csv')
-#     else:
-#         best_rail.print_output()
-#         best_rail.upload_output('output_simulated_annealing.csv')
+# Print and save the best rail
+if best_rail is not None:
+    print("Best Rail:")
+    if(best_rail.get_score() > 6735):
+        print("New HighScore!")
+        best_rail.print_output()
+        best_rail.upload_output('Highscore_simulated_annealing.csv')
+    else:
+        best_rail.print_output()
+        best_rail.upload_output('output_simulated_annealing.csv')
 
