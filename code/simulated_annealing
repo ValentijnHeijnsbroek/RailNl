@@ -7,11 +7,12 @@ from help_funtions import *
 from greedy import greedy_algorithm
 import matplotlib.pyplot as plt
 from IPython.display import clear_output
+from itertools import product
 from random_algo import random_algorithm
-# highscore is 8651
+
 max_aantal_trajecten = 20
 max_aantal_minuten = 180
-max_iterations_without_improvement = 200
+max_iterations_without_improvement = 3000
 
 
 def simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations = 1000, min_aantal_trajecten = 5, new_solution_iterations = 1):
@@ -29,6 +30,9 @@ def simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations
             # print(f"Best score: {best_score}")  
   
         current_temperature = temperature * math.exp(-cooling_rate * iteration)
+
+
+
         
         # Generate a new solution
         for i in range(new_solution_iterations):
@@ -161,48 +165,88 @@ def run_simulated_annealing(num_runs, temperature, cooling_rate, iterations, gre
     plt.savefig('Simulated_Annealing_process.png')
     plt.close()
 
-    # Calculate average score   
-    average_score = sum(scores_list) / len(scores_list)
+    # Calculate average score
+    if num_runs > 5:   
+        average_score = sum(scores_list) / len(scores_list)
 
-    # Show distribution
-    bin_width = 50
-    num_bins = int((max(scores_list) - min(scores_list)) / bin_width)
-    plt.figure(figsize=(10, 6))
-    plt.hist(scores_list, bins=num_bins, color='blue', edgecolor='black')
-    plt.axvline(x=best_score, color='red', linestyle='--', label=f'Highest Score: {best_score}')
-    plt.xlabel('Score')
-    plt.ylabel('Frequency')
-    plt.title(f"Simulated Annealing Progress\nInitial Temperature: {temperature}, Cooling Rate: {cooling_rate}, Iterations: {iterations}, num_runs: {num_runs}\n Average Score: {average_score}")
-    plt.legend()
-    plt.savefig('Score_Distribution_Simulated_Annealing_Clustered.png')
+        # Show distribution
+        bin_width = 50
+        num_bins = int((max(scores_list) - min(scores_list)) / bin_width)
+        plt.figure(figsize=(10, 6))
+        plt.hist(scores_list, bins=num_bins, color='blue', edgecolor='black')
+        plt.axvline(x=best_score, color='red', linestyle='--', label=f'Highest Score: {best_score}')
+        plt.xlabel('Score')
+        plt.ylabel('Frequency')
+        plt.title(f"Simulated Annealing Progress\nInitial Temperature: {temperature}, Cooling Rate: {cooling_rate}, Iterations: {iterations}, num_runs: {num_runs}\n Average Score: {average_score}")
+        plt.legend()
+        plt.savefig('Score_Distribution_Simulated_Annealing_Clustered.png')
 
     return best_rail
 
 
 # Set parameters for the entire process
-num_runs = 5
-initial_temperature = 1000
+num_runs = 50
+initial_temperature = 10000
 cooling_rate = 0.005
 iterations = 1500
-min_aantal_trajecten = 7
-greedy_iterations = 500
+min_aantal_trajecten = 10
+greedy_iterations = 200
 new_solution_iterations = 1
 
+
+def perform_grid_search():
+    initial_temperatures = [800, 1000, 1200]
+    cooling_rates = [0.005, 0.004, 0.003]
+
+    # Results dictionary to store the best rail for each parameter combination
+    results = {}
+
+    for temp, rate in product(initial_temperatures, cooling_rates):
+        print(f"Testing parameters: Initial Temperature = {temp}, Cooling Rate = {rate}")
+        
+        # Run simulated annealing multiple times and get the best rail for each combination
+        best_rail = run_simulated_annealing(
+            num_runs=200,
+            temperature=temp,
+            cooling_rate=rate,
+            iterations=1500,
+            greedy_iterations=300,
+            min_aantal_trajecten=10,
+            new_solution_iterations=1
+        )
+
+        # Store the best rail and its score in the results dictionary
+        results[(temp, rate)] = (best_rail, best_rail.get_score())
+
+        # Print the score for the current combination
+        print(f"Score for parameters ({temp}, {rate}): {best_rail.get_score()}")
+
+    print("\nScores of all parameters:")
+    for (temp, rate), (rail, score) in results.items():
+        print(f"({temp}, {rate}): {score}", end=", ")
+
+    # Print the best rail and its score
+    best_params, (best_rail, best_score) = max(results.items(), key=lambda x: x[1][1])
+    print(f"\nBest Rail (Parameters: Initial Temperature = {best_params[0]}, Cooling Rate = {best_params[1]}):")
+    print(f"Score: {best_score}")
+    
+    
+
+
+perform_grid_search()
+
+
 # Run simulated annealing multiple times and get the best rail
-best_rail = run_simulated_annealing(num_runs, initial_temperature, cooling_rate, iterations, greedy_iterations, min_aantal_trajecten, new_solution_iterations = new_solution_iterations)
+# best_rail = run_simulated_annealing(num_runs, initial_temperature, cooling_rate, iterations, greedy_iterations, min_aantal_trajecten, new_solution_iterations = new_solution_iterations)
 
-# Print and save the best rail
-if best_rail is not None:
-    print("Best Rail:")
-    best_rail.print_output()
-    best_rail.upload_output('output_simulated_annealing.csv')
-    # print(f"p = {best_rail.p}")
-    # print(best_rail.T)
-    # print(best_rail.sum_min)
-    # print(f"bereden unique verbinding{len(best_rail.bereden_unique_verbinding)/2})")
-    # print(f"amount connection = {best_rail.amount_of_connections}")
-
-# rail_at_max_score = simulated_annealing(initial_temperature, cooling_rate, iterations)
-# rail_at_max_score.print_output()
-# rail_at_max_score.upload_output('output_simulated_annealing.csv')
+# # Print and save the best rail
+# if best_rail is not None:
+#     print("Best Rail:")
+#     if(best_rail.get_score() > 6735):
+#         print("New HighScore!")
+#         best_rail.print_output()
+#         best_rail.upload_output('Highscore_simulated_annealing.csv')
+#     else:
+#         best_rail.print_output()
+#         best_rail.upload_output('output_simulated_annealing.csv')
 
