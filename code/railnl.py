@@ -8,18 +8,19 @@ import geopandas as gpd
 import csv
 import os
 import matplotlib.pyplot as plt
+from typing import list, Tuple
 
 class RailNL():
     def __init__(self):
-        self.stations = []
-        self.stations_connections = {}
-        self.amount_of_connections = 0
-        self.score = 10
-        self.trajecten = {}
+        self.stations: list = []
+        self.stations_connections: dict = {}
+        self.amount_of_connections: int = 0
+        self.score: int = 10
+        self.trajecten: dict = {}
 
         # For visualization purposes
-        self.iterations_list = []
-        self.scores_list = []
+        self.iterations_list: list = []
+        self.scores_list: list = []
 
 
     def load_stations(self, station_filename: str) -> None:
@@ -218,7 +219,7 @@ class RailNL():
         pre: x and y floats 
         post: return the station object or None, depending on if the station object exist or not
         """
-        epsilon = 0.01
+        epsilon: float = 0.01
         for station in self.stations:
             if abs(station.x - x) < epsilon and abs(station.y - y) < epsilon:
                 return station
@@ -268,14 +269,14 @@ class RailNL():
         pre: traject index integer
         post: an empty traject with a traject_index connected to it inside the dictionary
         """
-        traject = Traject()
+        traject: 'Traject' = Traject()
     
         # append the traject into the trajecten list
         self.trajecten[traject_index] = traject
         
         return traject
     
-    def sum_time(self, traject_index) -> int:
+    def sum_time(self, traject_index: int) -> int:
         """
         calculates the sum time of the traject
 
@@ -283,7 +284,7 @@ class RailNL():
         post: the total duration of the traject 
         """
         
-        duration = 0
+        duration: int = 0
 
         for i in range(len(self.trajecten[traject_index].traject_stations) - 1):
             station1 = self.trajecten[traject_index].traject_stations[i]
