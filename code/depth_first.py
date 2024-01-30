@@ -1,6 +1,7 @@
 import random
 import copy
 import pandas as pd
+import time
 from help_funtions import initialize_rail
 from railnl import RailNL
 import matplotlib.pyplot as plt
@@ -28,7 +29,7 @@ def find_central_hubs(connection_data: pd.DataFrame) -> List[str]:
 # make the list global
 central_hubs: List[str] = find_central_hubs(connection_data)
 
-def can_add_station(traject: RailNL, station: Station, visited_stations: Set[Station], station_visit_frequency: dict[Station: int]) -> bool:
+def can_add_station(traject: RailNL, station: Station, visited_stations: Set[Station], station_visit_frequency: dict[Station: int], threshold_visit_frequency: int) -> bool:
     """
     Checks whether the station can be added to the traject or not
 
@@ -78,7 +79,7 @@ def update_uncovered_connections(uncovered_connections: Set[tuple], traject: Tra
 
 def depth_first_search(rail: RailNL, traject: Traject, traject_index: int, visited_stations: Set[Station],
                       uncovered_connections: Set[tuple], current_depth: int, max_depth: int, current_score: float,
-                      central_hubs: List[str]) -> bool:
+                      central_hubs: List[str], max_aantal_minuten: int, threshold_visit_frequency: int, min_stations: int) -> bool:
     """
     Performs a depth-first search to add stations to a rail trajectory.
     This function recursively explores potential stations to add,
@@ -99,7 +100,7 @@ def depth_first_search(rail: RailNL, traject: Traject, traject_index: int, visit
 
     # Explore potential next stations
     for next_station in rail.stations:
-        if next_station not in visited_stations and can_add_station(traject, next_station, visited_stations, station_visit_frequency):
+        if next_station not in visited_stations and can_add_station(traject, next_station, visited_stations, station_visit_frequency, threshold_visit_frequency):
             traject.add_station_to_traject(next_station)
             visited_stations.add(next_station)
             update_uncovered_connections(uncovered_connections, traject)
@@ -112,7 +113,7 @@ def depth_first_search(rail: RailNL, traject: Traject, traject_index: int, visit
                 best_new_station = next_station
 
                 # Recursive search with updated score and depth
-                if depth_first_search(rail, traject, traject_index, visited_stations, uncovered_connections, current_depth + 1, max_depth, new_score, central_hubs):
+                if depth_first_search(rail, traject, traject_index, visited_stations, uncovered_connections, current_depth + 1, max_depth, new_score, central_hubs,max_aantal_minuten, threshold_visit_frequency, min_stations):
                     return True
 
             # Revert changes for the next iteration
@@ -134,7 +135,7 @@ def depth_first_search(rail: RailNL, traject: Traject, traject_index: int, visit
 # score list for histogram
 iteration_scores: List[float] = []
 
-def iterative_depth_first(max_depth: int, iterations: int, central_hubs: List[str], no_improvement_threshold: int = 1000) -> RailNL:
+def iterative_depth_first(max_depth: int, iterations: int, central_hubs: List[str], no_improvement_threshold: int, max_aantal_minuten: int, max_aantal_trajecten: int, threshold_visit_frequency: int, max_attempts: int, min_stations: int, max_time: time) -> RailNL:
     """
     Conducts an iterative depth-first search to optimize a network of rail trajectories.
     The function iterates over multiple attempts to construct an optimal set of trajectories
@@ -146,6 +147,8 @@ def iterative_depth_first(max_depth: int, iterations: int, central_hubs: List[st
           when there is no improvement for a given amount of iterations the central hub list refreshes
           stops trying to make a better rail given a start station after a certain amount of attempts
     """
+
+    start_time = time.time()  # Record the start time
     best_rail: RailNL = None
     best_score: float = 0
     iterations_without_improvement: int = 0
@@ -157,6 +160,10 @@ def iterative_depth_first(max_depth: int, iterations: int, central_hubs: List[st
         uncovered_connections.add((row['station2'], row['station1']))
 
     for iteration in range(iterations):
+        current_time = time.time()
+        if current_time - start_time > max_time:
+            print("20 minute time limit reached, stopping execution.")
+            break
         if iterations_without_improvement >= no_improvement_threshold:
             central_hubs = find_central_hubs(connection_data)
             iterations_without_improvement = 0
@@ -181,7 +188,7 @@ def iterative_depth_first(max_depth: int, iterations: int, central_hubs: List[st
             new_traject.add_station_to_traject(start_station)
             visited_stations: Set[Station] = set([start_station])
 
-            traject_improved: bool = depth_first_search(current_rail, new_traject, traject_index, visited_stations, uncovered_connections, 0, max_depth, 0, central_hubs)
+            traject_improved: bool = depth_first_search(current_rail, new_traject, traject_index, visited_stations, uncovered_connections, 0, max_depth, 0, central_hubs, max_aantal_minuten, threshold_visit_frequency, min_stations)
 
             if len(new_traject.traject_stations) >= min_stations:
                 valid_traject_count += 1
@@ -201,39 +208,11 @@ def iterative_depth_first(max_depth: int, iterations: int, central_hubs: List[st
                 for score in iteration_scores:
                     f.write(f"{score}\n")
 
-            if attempts > MAX_ATTEMPTS:
+            if attempts > max_attempts:
                 attempts = 0
                 break
             attempts += 1
         iteration_scores.append(new_score)
         print(f"End of iteration {iteration + 1}, Best score: {best_score}")
 
-    if best_rail:
-        best_rail.print_output()
-        best_rail.upload_output('depth_first_search.csv')
-    else:
-        print("No optimal rail configuration found.")
-
-    plt.hist(iteration_scores, bins=50, color='blue', alpha=0.7)
-    plt.xlabel('Scores')
-    plt.ylabel('Frequency')
-    plt.title('Histogram of Scores')
-    plt.grid(True)
-    plt.savefig('../data/depthfirst_histogram.png')
-
-    best_rail.plot_network()
-
     return best_rail
-
-# Example usage
-max_aantal_minuten: int = 180
-max_aantal_trajecten: int = 15
-
-threshold_visit_frequency: int = 9 
-MAX_ATTEMPTS: int = 400
-min_stations: int = 3
-max_depth: int = 75
-
-iterations: int = 240
-no_improvement_threshold: int = 40
-best_rail: RailNL = iterative_depth_first(max_depth, iterations, central_hubs, no_improvement_threshold)
