@@ -243,6 +243,12 @@ if __name__ == "__main__":
             # print(ant.get_duration())
         exploration_parameter = max(0.1, exploration_parameter * 0.9999)
         list_scores.append(aco.total_score(rail_network))
+        
+          # to save data in a txt file to compare in a histogram
+        with open('../data/aco_scores.txt', 'w') as f:
+                for score in list_scores:
+                    f.write(f"{score}\n")
+
         avg_score = sum(list_scores) / len(list_scores)
         if i % 10 == 0:
             print(f"{round(i / num_iterations * 100, 2)} %", avg_score, best_score, best_score_not_changed, exploration_parameter)

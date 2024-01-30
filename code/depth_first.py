@@ -202,6 +202,11 @@ def iterative_depth_first(max_depth: int, iterations: int, central_hubs: List[st
             else:
                 # If the trajectory is not valid, reduce the traject_index
                 traject_index -= 1
+              # to save data in a txt file to compare in a histogram
+            with open('../data/depth_first_scores.txt', 'w') as f:
+                for score in iteration_scores:
+                    f.write(f"{score}\n")
+
             if attempts > MAX_ATTEMPTS:
                 iteration_scores.append(new_score)
                 attempts = 0

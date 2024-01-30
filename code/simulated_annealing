@@ -50,6 +50,11 @@ def simulated_annealing(temperature, cooling_rate, iterations, greedy_iterations
         iterations_list.append(iteration)
         scores_list.append(new_score)
 
+        # to save data in a txt file to compare in a histogram
+        with open('../data/simulated_annealing_scores.txt', 'w') as file:
+            for score in scores_list:
+                file.write(f"{score}\n")
+
         # Decide whether to accept the new solution
         if accept_solution(current_score, new_score, current_temperature):
             current_rail = new_rail
@@ -186,7 +191,7 @@ def run_simulated_annealing(num_runs, temperature, cooling_rate, iterations, gre
 
 # Set parameters for the entire process
 num_runs = 50
-initial_temperature = 10000
+initial_temperature = 1000
 cooling_rate = 0.005
 iterations = 1500
 min_aantal_trajecten = 10
