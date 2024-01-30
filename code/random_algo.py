@@ -19,6 +19,7 @@ def random_algorithm(herhalingen: int):
     max_score: int = 0
     baseline_at_min_score: 'RailNL' = RailNL()
     min_score: int = 10000
+    score_list: List[float] = []
     while herhalingen > 0:
         aantal_trajecten = random.randint(1, max_aantal_trajecten)
         baseline = RailNL()
@@ -42,6 +43,7 @@ def random_algorithm(herhalingen: int):
                         break
                 else:
                     break
+        current_score = baseline.get_score()
         # If the score is higher than the max score, save the baseline        
         # if baseline.get_score() > max_score:
         #     max_score = baseline.get_score()
@@ -49,7 +51,11 @@ def random_algorithm(herhalingen: int):
         # if baseline.get_score() < min_score:
         #     min_score = baseline.get_score()
         #     baseline_at_min_score = baseline
-            
+        score_list.append(current_score)  
+        with open('../data/random_scores.txt', 'w') as f:
+                for score in score_list:
+                    f.write(f"{score}\n")
+
         herhalingen -= 1 
         if herhalingen/totaal_herhalingen * 100 % 1 == 0:
             print(f"{herhalingen/totaal_herhalingen * 100}%")
@@ -58,7 +64,7 @@ def random_algorithm(herhalingen: int):
     # return baseline_at_max_score, baseline_at_min_score
 
 if __name__ == "__main__":
-    baseline = random_algorithm(1)
+    baseline = random_algorithm(100)
     print(baseline.get_score())
     # print(T)
     # print(len(baseline.trajecten))

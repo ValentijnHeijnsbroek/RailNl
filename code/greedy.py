@@ -3,6 +3,8 @@ import random
 from station import Station
 import copy
 from help_funtions import *
+from typing import List
+
 max_aantal_trajecten = 20
 max_aantal_minuten = 180
 #Toevoegen dat traject begint bij een station met weinig verbindingen bijv
@@ -12,6 +14,7 @@ def greedy_algorithm(herhalingen, min_aantal_trajecten = 5):
     greedy_at_max_score = initialize_rail("Nationaal")
     greedy = initialize_rail("Nationaal")
     max_score = 0
+    score_list: List[float] = []
     while herhalingen > 0:
         aantal_trajecten = random.randint(min_aantal_trajecten, max_aantal_trajecten)
         for i in range(1, aantal_trajecten + 1):
@@ -30,6 +33,11 @@ def greedy_algorithm(herhalingen, min_aantal_trajecten = 5):
                         greedy.trajecten[i].add_station_to_traject(begin_station)
                 else:    
                     break
+        current_score = greedy.get_score()
+        score_list.append(current_score)  
+        with open('../data/greedy_scores.txt', 'w') as f:
+                for score in score_list:
+                    f.write(f"{score}\n")
 
         # for own reference if highscore is beaten
         if greedy.get_score() > max_score:
@@ -42,5 +50,5 @@ def greedy_algorithm(herhalingen, min_aantal_trajecten = 5):
         greedy.trajecten = {}
     return greedy_at_max_score
 
-# greedy = greedy_algorithm(10000)
+greedy = greedy_algorithm(100)
 # greedy.print_output()

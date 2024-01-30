@@ -8,19 +8,19 @@ import geopandas as gpd
 import csv
 import os
 import matplotlib.pyplot as plt
-from typing import List, Tuple
+from typing import list, Tuple, Set
 
 class RailNL():
     def __init__(self):
-        self.stations: list = []
+        self.stations: List = []
         self.stations_connections: dict = {}
         self.amount_of_connections: int = 0
         self.score: int = 10
         self.trajecten: dict = {}
 
         # For visualization purposes
-        self.iterations_list: list = []
-        self.scores_list: list = []
+        self.iterations_list: List = []
+        self.scores_list: List = []
 
 
     def load_stations(self, station_filename: str) -> None:
@@ -238,7 +238,7 @@ class RailNL():
         """
         sum_min = 0 # Min het aantal minuten in alle trajecten samen.
         bereden_trajecten: int = 0
-        bereden_unique_verbinding: set[list]= set([])
+        bereden_unique_verbinding: set[List]= set([])
         T = len(self.trajecten) #het aantal trajecten
         for traject_index in self.trajecten:
             sum_min += self.sum_time(traject_index)  # Berekent per traject de duration
