@@ -12,12 +12,6 @@ from typing import List, Set
 file_path: str = '../data/ConnectiesNationaal.csv'
 connection_data: pd.DataFrame = pd.read_csv(file_path)
 
-# Constants
-max_aantal_minuten: int = 180
-max_aantal_trajecten: int = 15
-threshold_visit_frequency: int = 9  # Adjust as needed
-MAX_ATTEMPTS: int = 400
-min_stations: int = 3
 
 # Function to find central hubs
 def find_central_hubs(connection_data: pd.DataFrame) -> List[str]:
@@ -232,7 +226,14 @@ def iterative_depth_first(max_depth: int, iterations: int, central_hubs: List[st
     return best_rail
 
 # Example usage
+max_aantal_minuten: int = 180
+max_aantal_trajecten: int = 15
+
+threshold_visit_frequency: int = 9 
+MAX_ATTEMPTS: int = 400
+min_stations: int = 3
 max_depth: int = 75
+
 iterations: int = 240
 no_improvement_threshold: int = 40
 best_rail: RailNL = iterative_depth_first(max_depth, iterations, central_hubs, no_improvement_threshold)
