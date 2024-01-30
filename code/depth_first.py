@@ -16,8 +16,8 @@ connection_data: pd.DataFrame = pd.read_csv(file_path)
 max_aantal_minuten: int = 180
 max_aantal_trajecten: int = 15
 threshold_visit_frequency: int = 9  # Adjust as needed
-MAX_ATTEMPTS: int = 300
-min_stations: int = 2
+MAX_ATTEMPTS: int = 400
+min_stations: int = 3
 
 # Function to find central hubs
 def find_central_hubs(connection_data: pd.DataFrame) -> List[str]:
@@ -233,6 +233,6 @@ def iterative_depth_first(max_depth: int, iterations: int, central_hubs: List[st
 
 # Example usage
 max_depth: int = 75
-iterations: int = 1050
-no_improvement_threshold: int = 63
+iterations: int = 240
+no_improvement_threshold: int = 40
 best_rail: RailNL = iterative_depth_first(max_depth, iterations, central_hubs, no_improvement_threshold)

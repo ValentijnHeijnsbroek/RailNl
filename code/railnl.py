@@ -1,6 +1,7 @@
 from station import Station
 from traject import Traject
 from matplotlib.widgets import CheckButtons
+from typing import Any, Optional
 
 import mplcursors
 import geopandas as gpd
@@ -21,7 +22,7 @@ class RailNL():
         self.scores_list = []
 
 
-    def load_stations(self, station_filename):
+    def load_stations(self, station_filename: str) -> None:
         """
         loads stations into 2 different lists one for the name and 
         the other into a list of station variables
@@ -41,7 +42,7 @@ class RailNL():
                 station = Station(name, x, y)
                 self.stations.append(station)
 
-    def load_connections(self, connection_filename):
+    def load_connections(self, connection_filename: str) -> None:
         """
         loads the connections between stations and puts a station's connections with
         each station it has inside of a list.
@@ -66,8 +67,6 @@ class RailNL():
                     if station.name == station_data:
                         starting_connection = station
                         
-                        
-                        # name_1 = station_data
 
                     if station.name == connection_data:
                         ending_connection = station
@@ -78,7 +77,7 @@ class RailNL():
                     self.amount_of_connections += 1
                     
         # using the name of the station to get the station variable 
-    def get_station_by_name(self, station_name: str):
+    def get_station_by_name(self, station_name: str) -> Any:
         """
         uses the name of a station to give the station object
 
@@ -91,7 +90,7 @@ class RailNL():
         return None
 
     
-    def plot_network(self):
+    def plot_network(self) -> None:
         """
         creates a plot showing the trajects with different lines and it also shows
         the station with their corresponding name when hovering over it.
@@ -212,7 +211,7 @@ class RailNL():
         plt.show()
     
     
-    def get_station_by_coordinates(self, x, y):
+    def get_station_by_coordinates(self, x: float, y: float) -> Optional[Station]:
         """
         uses the coordinates to get the station object connected to it
 
@@ -227,7 +226,7 @@ class RailNL():
 
 
     # Calculates and returns score.
-    def get_score(self):
+    def get_score(self) -> float:
         """
         calculates the K score as defined on the case website, returns an integer
         
@@ -237,8 +236,8 @@ class RailNL():
               sum_min: de total time of all the trajects
         """
         sum_min = 0 # Min het aantal minuten in alle trajecten samen.
-        bereden_trajecten = 0
-        bereden_unique_verbinding = set([])
+        bereden_trajecten: int = 0
+        bereden_unique_verbinding: set[list]= set([])
         T = len(self.trajecten) #het aantal trajecten
         for traject_index in self.trajecten:
             sum_min += self.sum_time(traject_index)  # Berekent per traject de duration
@@ -256,13 +255,13 @@ class RailNL():
         if self.amount_of_connections == 0:
         # If there are no connections, return 0 for genetic algorithm
             return 0
-        p =  (len(bereden_unique_verbinding)/2) / self.amount_of_connections  # de fractie van de bereden verbindingen (dus tussen 0 en 1)
+        p: float =  (len(bereden_unique_verbinding)/2) / self.amount_of_connections  # de fractie van de bereden verbindingen (dus tussen 0 en 1)
         
-        K = p*10000 - (T*100 + sum_min)
+        K: float= p*10000 - (T*100 + sum_min)
         
         return round(K, 2)
     
-    def create_traject(self, traject_index):
+    def create_traject(self, traject_index) -> Traject:
         """
         creates a new empty traject and adds a traject_index to it
 
@@ -276,7 +275,7 @@ class RailNL():
         
         return traject
     
-    def sum_time(self, traject_index):
+    def sum_time(self, traject_index) -> int:
         """
         calculates the sum time of the traject
 
@@ -296,7 +295,7 @@ class RailNL():
         return duration
 
     # Saves output to csv file.
-    def upload_output(self, output_filename):
+    def upload_output(self, output_filename) -> csv:
         """
         uploads the output inside the file_name 
 
@@ -313,7 +312,7 @@ class RailNL():
             writer.writerow((['score', self.get_score()]))
     
     # Prints example output
-    def print_output(self):
+    def print_output(self) -> str:
         """
         prints out the example output with the score and the total time for each traject
 
@@ -331,7 +330,7 @@ class RailNL():
         print(f"Score: {self.get_score()}")
     
     # Method that clears all the trajects of the railnl instance.
-    def clear_trajecten(self):
+    def clear_trajecten(self) -> None:
         """
         gets rid of all trajects inside the railnl
 
@@ -340,7 +339,7 @@ class RailNL():
         self.trajecten = {}
 
 
-    def get_num_connections(self):
+    def get_num_connections(self) -> int:
         """
         looks at how many total connections there are from the connections file 
 
@@ -349,7 +348,7 @@ class RailNL():
         return self.amount_of_connections
 
         # Delete traject, and adjusts every traject index so that it is numbered from 1 to len(trajecten)
-    def delete_traject(self, traject_index):
+    def delete_traject(self, traject_index: int) -> None:
         """
         deletes a specific traject when a traject_index is given
 
