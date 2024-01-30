@@ -8,7 +8,7 @@ import geopandas as gpd
 import csv
 import os
 import matplotlib.pyplot as plt
-from typing import list, Tuple
+from typing import List, Tuple
 
 class RailNL():
     def __init__(self):

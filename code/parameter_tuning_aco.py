@@ -6,7 +6,7 @@ from aco import Ant, ACO
 import time
 from typing import List, Tuple
 
-def run_aco_and_write_to_csv(parameter_set: List[Tuple[int, float, float, int, int, int]], num_runs: int = 10) -> None:
+def run_aco_and_write_to_csv(parameter_set: List[Tuple[int, float, float, int, int, int]], num_runs: int = 20) -> None:
     """
     Runs the ACO algorithm with the given parameter set and writes the results to a CSV file.
     Pre: parameter_set is a list of tuples containing the parameter values to be tested.
@@ -15,20 +15,21 @@ def run_aco_and_write_to_csv(parameter_set: List[Tuple[int, float, float, int, i
     total_combinations = len(parameter_set)
     current_combination = 0
     
-    with open('results.csv', 'w', newline='') as csvfile:
-        fieldnames = ['evaporation_rate', 'exploration_parameter', 'end_random_iterations', 'min_trajecten', 'max_trajecten', 'best_score', 'best_iteration', 'avg_score']
+    with open('best_results.csv', 'w', newline='') as csvfile:
+        fieldnames = ['evaporation_rate', 'exploration_parameter', 'end_random_iterations',
+                      'min_trajecten', 'max_trajecten', 'best_score', 'best_iteration', 'avg_score', 'best_trajectories']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         
         for params in parameter_set:
             current_combination += 1
             num_iterations, evaporation_rate, exploration_parameter, min_trajecten, max_trajecten, end_random_iterations = params
-            best_results = {'best_score': 0, 'best_iteration': 0, 'avg_score': 0}
+            best_results = {'best_score': 0, 'best_iteration': 0, 'avg_score': 0, 'best_trajectories': None}
 
             for run in range(num_runs):
                 print(f"Combination {current_combination}/{total_combinations}, Run {run + 1}/{num_runs}")
 
-                best_score, best_iteration, avg_score = run_aco_with_time_limit(
+                best_score, best_iteration, avg_score, best_trajectories = run_aco_with_time_limit(
                     num_iterations, evaporation_rate, exploration_parameter, min_trajecten, max_trajecten, end_random_iterations
                 )
 
@@ -36,6 +37,7 @@ def run_aco_and_write_to_csv(parameter_set: List[Tuple[int, float, float, int, i
                     best_results['best_score'] = best_score
                     best_results['best_iteration'] = best_iteration
                     best_results['avg_score'] = avg_score
+                    best_results['best_trajectories'] = best_trajectories
 
             writer.writerow({
                 'evaporation_rate': evaporation_rate,
@@ -45,7 +47,8 @@ def run_aco_and_write_to_csv(parameter_set: List[Tuple[int, float, float, int, i
                 'max_trajecten': max_trajecten,
                 'best_score': best_results['best_score'],
                 'best_iteration': best_results['best_iteration'],
-                'avg_score': best_results['avg_score']
+                'avg_score': best_results['avg_score'],
+                'best_trajectories': best_results['best_trajectories']
             })
 
 def run_aco_with_time_limit(num_iterations: int, evaporation_rate: float, exploration_parameter: float,
@@ -54,7 +57,7 @@ def run_aco_with_time_limit(num_iterations: int, evaporation_rate: float, explor
     Runs the ACO algorithm with the given parameters and a time limit of 3 minutes per iteration.
     Pre: num_iterations is an integer, evaporation_rate is a float, exploration_parameter is a float,
     min_trajecten is an integer, max_trajecten is an integer, end_random_iterations is an integer.
-    Post: the best score, best iteration and average score of the ACO algorithm are returned.
+    Post: the best score, best iteration, average score and the trajectories of the ACO algorithm are returned.
     """
     rail_network = RailNL()
     aco = ACO()
@@ -120,17 +123,20 @@ def run_aco_with_time_limit(num_iterations: int, evaporation_rate: float, explor
         if elapsed_time > time_limit:
             print("Time limit reached")
             break
-        
-    return best_score, best_iteration, avg_score
+    
+    
+    best_trajectories = [[station.name for station in trajectory] for trajectory in best_netwerk.values()]
+    
+    return best_score, best_iteration, avg_score, best_trajectories
 
 if __name__ == '__main__':
     parameter_values = {
         'num_iterations': [50000],
-        'evaporation_rate': [0.001, 0.005],
-        'exploration_parameter': [0.3, 0.5, 0.7],
+        'evaporation_rate': [0.001, 0.005, 0.01],
+        'exploration_parameter': [0.5],
         'min_trajecten': [3],
         'max_trajecten': [18],
-        'end_random_iterations': [500,1000],
+        'end_random_iterations': [1000],
     }
     parameter_set = list(product(*parameter_values.values()))
     
