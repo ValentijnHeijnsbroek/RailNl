@@ -1,17 +1,24 @@
 import random
 import copy
 from railnl import RailNL
-max_aantal_trajecten = 20
-max_aantal_minuten = 180   
+from typing import List
+max_aantal_trajecten: int = 20
+max_aantal_minuten: int = 180   
+
 # Create a random procedure to select a amount of trajecten that is less than max aantal trajecten
 
 # Adds a random amount of trajecten to the baseline, each with a random amount of stations. Each station is choosen randomly.
-def random_algorithm(herhalingen):
-    totaal_herhalingen = herhalingen
-    baseline_at_max_score = RailNL()
-    max_score = 0
-    baseline_at_min_score = RailNL()
-    min_score = 10000
+def random_algorithm(herhalingen: int):
+    """
+    Runs the random algorithm for the specified number of iterations.
+    Pre: herhalingen is an integer.
+    Post: the score of the random algorithm is returned.
+    """
+    totaal_herhalingen: int = herhalingen
+    baseline_at_max_score: 'RailNL' = RailNL()
+    max_score: int = 0
+    baseline_at_min_score: 'RailNL' = RailNL()
+    min_score: int = 10000
     while herhalingen > 0:
         aantal_trajecten = random.randint(1, max_aantal_trajecten)
         baseline = RailNL()
@@ -50,13 +57,14 @@ def random_algorithm(herhalingen):
     return baseline_at_max_score
     # return baseline_at_max_score, baseline_at_min_score
 
-baseline = random_algorithm(1)
-print(baseline.get_score())
-# print(T)
-# print(len(baseline.trajecten))
+if __name__ == "__main__":
+    baseline = random_algorithm(1)
+    print(baseline.get_score())
+    # print(T)
+    # print(len(baseline.trajecten))
 
-# random_test = random_algorithm(10000)
-#  #print_output(random_test)
-# print(random_test.get_score())
-# random_test.print_output()
-# random_test.upload_output('output.csv')
+    # random_test = random_algorithm(10000)
+    #  #print_output(random_test)
+    # print(random_test.get_score())
+    # random_test.print_output()
+    # random_test.upload_output('output.csv')
