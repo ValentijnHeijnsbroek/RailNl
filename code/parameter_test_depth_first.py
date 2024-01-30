@@ -1,6 +1,9 @@
 from depth_first import *
 
+# the max amount of minutes a traject is allowed to have
 max_aantal_minuten = 180
+
+# the max amount of trajecten the rail is allowed to have
 max_aantal_trajecten = 15
 
 # max amount of visitation a station is allowed to have in the rail

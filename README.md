@@ -18,3 +18,30 @@ Inside the function, set the desired values for initial_temperatures and cooling
 Run the script to perform a grid search on the specified parameter combinations.
 Examine the results, including the scores obtained for each parameter combination.
 Identify the best parameter set based on the highest score.
+
+## Depth first
+
+### Running the Depth First Algorithm
+
+To effectively run the depth first algorithm, follow these steps:
+
+### Select the Map
+1. Open `depth_first.py`.
+2. Choose the map you wish to use for the algorithm. You can select either `Holland` or `Nationaal`.
+3. Set the map by changing the value in the `initialize_rail('Holland'/'Nationaal')` function call accordingly.
+4. Additionally, adjust the file path for the map data. Change the `Nationaal` part of the file path to `Holland` if you are using the Holland map.
+
+### Configure Parameters
+1. Open `parameter_test_depth_first.py`.
+2. Modify the parameters according to your requirements like: max iterations, max attempts per rail, etc. These parameters will influence the behavior and output of the algorithm.
+
+### Run the Algorithm
+Run `parameter_test_depth_first.py`. This will execute the depth first algorithm with the specified parameters and map.
+
+### Output
+Upon completion, the algorithm provides:
+- A **score** indicating the effectiveness of the generated routes.
+- A **visual map** depicting the routes.
+- A **PNG file** illustrating the progression of scores achieved by the algorithm.
+- To start when inputting the parameter max_aantal_trajecten at 15 and the the minimum amount of stations
+per traject at 3, it will give the score around the 6400/6500 the quickest and consistently 
