@@ -16,7 +16,7 @@ class RailNL():
         self.score = 10
         self.trajecten = {}
 
-        # For visualizatio purposes
+        # For visualization purposes
         self.iterations_list = []
         self.scores_list = []
 

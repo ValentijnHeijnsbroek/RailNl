@@ -114,7 +114,7 @@ class ACO:
                     except KeyError:
                         self.pheromones[(station_2.name, station_1.name)] += 1 / best_score
 
-    def total_score(self) -> float:
+    def total_score(self, rail_network) -> float:
         """Returns the total score of the rail network."""	
         self.duration_totaal = 0
         self.unique_connections.clear()
@@ -193,7 +193,7 @@ if __name__ == "__main__":
             aco.totaal_trajecten[ant] = ant.traject
             # print(ant.get_duration())
         exploration_parameter = max(0.1, exploration_parameter * 0.9999)
-        list_scores.append(aco.total_score())
+        list_scores.append(aco.total_score(rail_network))
         avg_score = sum(list_scores) / len(list_scores)
         if i % 10 == 0:
             print(f"{round(i / num_iterations * 100, 2)} %", avg_score, best_score, best_score_not_changed, exploration_parameter)
@@ -201,7 +201,7 @@ if __name__ == "__main__":
         for ant, trajectory in aco.totaal_trajecten.items():
             station_names = [station.name for station in trajectory]
 
-        score_totaal = aco.total_score()
+        score_totaal = aco.total_score(rail_network)
         if score_totaal > best_score:
             prev_best_score = best_score
             best_score = score_totaal
