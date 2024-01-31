@@ -47,7 +47,7 @@ class RailNL():
         """
         loads the connections between stations and puts a station's connections with
         each station it has inside of a list.
-        It also adds the distance between the connected station as a float with the
+        it also adds the distance between the connected station as a float with the
         2 stations being the key for that
 
         pre: connection_filename string
@@ -123,7 +123,7 @@ class RailNL():
                 station1 = traject_stations[i]
                 station2 = traject_stations[i + 1]
                 
-                # so that the lines are not on top of each other
+                # So that the lines are not on top of each other
                 offset = 0.01 * (i % 2)
 
                 line, = ax.plot([station1.x, station2.x], [station1.y + offset, station2.y + offset],
@@ -158,6 +158,7 @@ class RailNL():
         # Use mplcursors to capture mouse events and show station names on hover
         cursor = mplcursors.cursor(hover=True)
 
+        # Handles hover events to show station names
         def on_hover(sel):
             x, y = sel.target
             station = self.get_station_by_coordinates(x, y)
@@ -182,6 +183,7 @@ class RailNL():
             line_handles.append(lines[0])  # Only add the first line of each trajectory to the legend
             line_labels.append(label)
 
+        # Handles checkbox clicks to toggle visibility of trajectories
         def update_visibility(label):
             traject_index = int(label.split()[-1])  # Extract traject index from label
 
@@ -286,13 +288,14 @@ class RailNL():
         
         duration: int = 0
 
+        # Gets the duration for each connection in the traject
         for i in range(len(self.trajecten[traject_index].traject_stations) - 1):
             station1 = self.trajecten[traject_index].traject_stations[i]
             station2 = self.trajecten[traject_index].traject_stations[i + 1]
 
+            # Add it to the duration sum
             if station1.connections_durations[station2]:
                 duration += station1.connections_durations[station2]
-                # print(duration)
         return duration
 
     # Saves output to csv file.

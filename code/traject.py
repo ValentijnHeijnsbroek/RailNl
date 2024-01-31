@@ -70,6 +70,7 @@ class Traject:
         post: if the traject is empty, 'station' is added to the traject_stations list.
               if the traject_stations list is not empty and there are connected stations to the last station, a random connected station is returned.    
         """
+        # Checks what connections the station has
         if self.traject_stations:
             last_station = self.traject_stations[-1]
             list_possible_stations = [station for station in last_station.connections if not self.is_bereden(station)]
