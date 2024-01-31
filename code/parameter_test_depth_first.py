@@ -10,13 +10,13 @@ max_aantal_trajecten = 15
 threshold_visit_frequency = 9
 
 # how many attempts to find better combinations for the rail
-max_attempts = 400
+max_attempts = 600
 
 # minimum stations per traject
 min_stations = 3
 
 # how deep it looks through each traject 
-max_depth = 20
+max_depth = 75
 
 #amount of rail getting made
 iterations = 1200
@@ -25,7 +25,7 @@ iterations = 1200
 max_time = 1200
 
 # if score hasent improved, central hubs list resets
-no_improvement_threshold = 40
+no_improvement_threshold = 80
 
 best_rail = iterative_depth_first(max_depth, iterations, central_hubs, no_improvement_threshold, max_aantal_minuten, max_aantal_trajecten, threshold_visit_frequency, max_attempts, min_stations, max_time)
 

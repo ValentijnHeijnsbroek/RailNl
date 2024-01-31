@@ -372,4 +372,3 @@ parent_directory = os.path.abspath(os.path.join(script_directory, '..'))
 data_directory = os.path.join(parent_directory, 'data')  # Change 'data' to the actual name of your data directory
 # Set the working directory to the data directory
 os.chdir(data_directory)
-

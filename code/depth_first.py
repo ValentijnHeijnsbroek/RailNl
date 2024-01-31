@@ -9,7 +9,7 @@ from station import Station
 from traject import Traject
 from typing import List, Set
 
-# Load the connection data
+# Load the connection data from the map you want to use
 file_path: str = '../data/ConnectiesNationaal.csv'
 connection_data: pd.DataFrame = pd.read_csv(file_path)
 
@@ -23,10 +23,12 @@ def find_central_hubs(connection_data: pd.DataFrame) -> List[str]:
     post: central hubs list
     """
     connection_counts: pd.Series = (connection_data['station1'].value_counts() + connection_data['station2'].value_counts()).fillna(0)
+    
+    # Make the list sort the stations with the amount of connections
     central_hubs: List[str] = connection_counts.sort_values(ascending=False).index.tolist()
     return central_hubs
 
-# make the list global
+# Make the list global
 central_hubs: List[str] = find_central_hubs(connection_data)
 
 def can_add_station(traject: RailNL, station: Station, visited_stations: Set[Station], station_visit_frequency: dict[Station: int], threshold_visit_frequency: int) -> bool:
@@ -37,20 +39,27 @@ def can_add_station(traject: RailNL, station: Station, visited_stations: Set[Sta
         been in the rail
     post: True or False
     """
+    # Dont add the same station as before
     if len(traject.traject_stations) > 0:
         last_station: Station = traject.traject_stations[-1]
         if last_station.name == station.name:
             return False
-
+    
+    # If the station is not connected to the previous station return False
     if len(traject.traject_stations) > 0:
         last_station: Station = traject.traject_stations[-1]
         if not ((connection_data['station1'] == last_station.name) & (connection_data['station2'] == station.name)).any() and \
            not ((connection_data['station2'] == last_station.name) & (connection_data['station1'] == station.name)).any():
             return False
+    
+    # Limit on the amount of station in a traject
     if len(traject.traject_stations) >= 20:
         return False
+    
+    # Limit how many times a station can be used in a rail
     if station_visit_frequency.get(station.name, 0) > threshold_visit_frequency:
         return False
+    
     return True
 
 def update_uncovered_connections(uncovered_connections: Set[tuple], traject: Traject) -> None:
@@ -62,6 +71,7 @@ def update_uncovered_connections(uncovered_connections: Set[tuple], traject: Tra
     post: updated uncovered connection list for the rail
     """
     if len(traject.traject_stations) >= 2:
+
         # Get the last two stations in the traject
         last_station: Station = traject.traject_stations[-2]
         new_station: Station = traject.traject_stations[-1]
@@ -72,6 +82,7 @@ def update_uncovered_connections(uncovered_connections: Set[tuple], traject: Tra
         # Remove the connection from uncovered connections
         if connection in uncovered_connections:
             uncovered_connections.remove(connection)
+
         # Check and remove the reverse connection as well
         reverse_connection: tuple = (new_station.name, last_station.name)
         if reverse_connection in uncovered_connections:
@@ -132,7 +143,7 @@ def depth_first_search(rail: RailNL, traject: Traject, traject_index: int, visit
 
     return score_improved
 
-# score list for histogram
+# core list for histogram
 iteration_scores: List[float] = []
 
 def iterative_depth_first(max_depth: int, iterations: int, central_hubs: List[str], no_improvement_threshold: int, max_aantal_minuten: int, max_aantal_trajecten: int, threshold_visit_frequency: int, max_attempts: int, min_stations: int, max_time: time) -> RailNL:
@@ -143,41 +154,45 @@ def iterative_depth_first(max_depth: int, iterations: int, central_hubs: List[st
 
     pre: max depth int, iterations int, central hubs list, and a no improvement threshold
     post: returns the best rail network configuration found after all iterations
-          when a better rail network has been found it changes the best rail into that one
-          when there is no improvement for a given amount of iterations the central hub list refreshes
-          stops trying to make a better rail given a start station after a certain amount of attempts
     """
-
-    start_time = time.time()  # Record the start time
-    best_rail: RailNL = None
-    best_score: float = 0
-    iterations_without_improvement: int = 0
+    # Record the start time for the time limit feature
+    start_time: time = time.time()  
+    best_rail: RailNL = None  
+    best_score: float = 0  
+    iterations_without_improvement: int = 0 
     uncovered_connections: Set[tuple] = set()
-    attempts: int = 0
+    attempts: int = 0  
 
+    # Initialize the uncovered connections set
     for _, row in connection_data.iterrows():
         uncovered_connections.add((row['station1'], row['station2']))
         uncovered_connections.add((row['station2'], row['station1']))
 
+    # Main iteration loop
     for iteration in range(iterations):
+        # Check for time limit
         current_time = time.time()
         if current_time - start_time > max_time:
-            print("20 minute time limit reached, stopping execution.")
+            print("Time limit reached, stopping execution.")
             break
+
+        # Refresh central hubs list if no improvement threshold is reached
         if iterations_without_improvement >= no_improvement_threshold:
             central_hubs = find_central_hubs(connection_data)
             iterations_without_improvement = 0
 
-        print(f"Progress: {iteration / iterations * 100:.2f}%")
-        current_rail: RailNL = initialize_rail()
-        valid_traject_count: int = 0
-        new_score: float = 0
-        traject_index: int = 0
+        # Progress update, new scores gets reset
+        print(f"Progress: {iteration / iterations * 100:.2f}%")  
+        current_rail: RailNL = initialize_rail()  # 
+        valid_traject_count: int = 0 
+        new_score: float = 0  
+        traject_index: int = 0  
 
+        # Add trajectories to the current rail configuration
         while valid_traject_count < max_aantal_trajecten:
             traject_index += 1
             new_traject: Traject = current_rail.create_traject(traject_index)
-
+            # Choose a start station
             if central_hubs:
                 start_station_name: str = random.choice(central_hubs)
                 central_hubs.remove(start_station_name)
@@ -188,12 +203,15 @@ def iterative_depth_first(max_depth: int, iterations: int, central_hubs: List[st
             new_traject.add_station_to_traject(start_station)
             visited_stations: Set[Station] = set([start_station])
 
+            # Perform depth-first search for the current trajectory
             traject_improved: bool = depth_first_search(current_rail, new_traject, traject_index, visited_stations, uncovered_connections, 0, max_depth, 0, central_hubs, max_aantal_minuten, threshold_visit_frequency, min_stations)
 
+            # Check if the new trajectory is valid
             if len(new_traject.traject_stations) >= min_stations:
                 valid_traject_count += 1
                 new_score = current_rail.get_score()
 
+                # Update best score and rail configuration if improved
                 if new_score > best_score:
                     best_score = new_score
                     best_rail = copy.deepcopy(current_rail)
@@ -201,18 +219,20 @@ def iterative_depth_first(max_depth: int, iterations: int, central_hubs: List[st
                 else:
                     iterations_without_improvement += 1
             else:
-                # If the trajectory is not valid, reduce the traject_index
-                traject_index -= 1
-            
+                traject_index -= 1  # If trajectory not valid, decrement traject index
+
+            # Write scores to file
             with open('../data/depth_first_scores.txt', 'w') as f:
                 for score in iteration_scores:
                     f.write(f"{score}\n")
 
+            # Check for max attempts limit
             if attempts > max_attempts:
                 attempts = 0
                 break
             attempts += 1
-        iteration_scores.append(new_score)
+
+        iteration_scores.append(new_score)  # Store the score for this iteration
         print(f"End of iteration {iteration + 1}, Best score: {best_score}")
 
-    return best_rail
+    return best_rail  # Return the best rail configuration found
