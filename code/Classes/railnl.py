@@ -317,7 +317,8 @@ class RailNL():
         pre: the outputname of the file name which is a string
         post: file gets created with the output and score
         """
-        with open(output_filename, 'w', newline='') as file:
+        output_path = f'output/{output_filename}'
+        with open(output_path, 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(['train', 'stations'])
             for i in range(1, len(self.trajecten) + 1): 
