@@ -57,9 +57,9 @@ Ant Colony Optimization (ACO) is inspired by how an ant colony finds the best ro
 To avoid pheromone levels getting too high, and thereby unstimulating the ants to explore not yet dicsovered connections, each iteration all connections are deducted a small amount of their pheromones(evaporation_rate). To further explore possible solutions, a parameter is specified(end_random_iterations) that controls when the number of ants are no longer randomly chosen, but chosen based on previous iterations. By correctly tuning the parameters, this algorithm can be used to optimise the score function. If for a certain amount of iterations(threshold) the algorithm doesn't yield a score that's at least 10 points higher than the previous highscore , the algorithm will stop.
 
 ### Choosing map size and parameters
-1: Open the 'aco.py' file
-2: Choose the map size by setting the network_size_stations and the network_size_connections variables. By default StationsNationaal.csv   en ConnectiesNationaal.csv
-3: Set the other parameters to your liking
+1. Open the 'aco.py' file
+2. Choose the map size by setting the network_size_stations and the network_size_connections variables. By default StationsNationaal.csv   en ConnectiesNationaal.csv
+3. Set the other parameters to your liking
 
 ### Run the algorithm:
 Run the algorithm by executing the aco.py file
