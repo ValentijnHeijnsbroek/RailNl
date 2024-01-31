@@ -2,11 +2,20 @@ from railnl import RailNL
 import random
 
 def initialize_rail(Map = 'Nationaal'):
+    """
+    Initializes the rail based on which Map the user wants to use
+
+    pre: Map, Nationaal or Holland
+    post Rail initialized based on which map is used
+    """
+    # The wwhole of the Netherlands
     if Map == 'Nationaal':
         rail_nl = RailNL()
         rail_nl.load_stations('StationsNationaal.csv')
         rail_nl.load_connections('ConnectiesNationaal.csv')
         return rail_nl
+    
+    # The provinces North and South Holland
     elif Map == "Holland":
         rail_nl = RailNL()
         rail_nl.load_stations('StationsHolland.csv')
@@ -32,7 +41,3 @@ def greedy_decision(rail, traject_index, max_aantal_minuten=180):
         if len(rail.trajecten[traject_index].traject_stations) == 1:
             best_station = random.choice(list_possible_stations)
     return best_station
-
-# test = initialize_rail("Holland")
-# test.create_traject(1) 
-# print(test.trajecten)
