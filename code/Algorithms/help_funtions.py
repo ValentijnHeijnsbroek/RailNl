@@ -1,3 +1,10 @@
+""" 
+    This file contains all the help functions that are used in the algorithms.
+    The functions are:
+    - initialize_rail(Map)
+    - greedy_decision(rail, traject_index, max_aantal_minuten=180)
+"""
+
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

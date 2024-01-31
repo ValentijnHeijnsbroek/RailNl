@@ -1,3 +1,11 @@
+"""
+Hill Climber Algorithm for Rail Network Optimization
+
+This script implements the hill climber algorithm to optimize a rail network configuration. 
+The optimization includes adding, deleting, and substituting stations in trajectories to maximize the overall score. 
+The algorithm uses a combination of hill climbing and a greedy algorithm for trajectory generation.
+
+"""
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -6,18 +14,9 @@ from Classes.railnl import RailNL
 import random
 import copy
 import matplotlib.pyplot as plt 
-from help_funtions import *
+from help_funtions import initialize_rail, greedy_decision
 from greedy import greedy_algorithm
 from typing import List
-"""
-Hill Climber Algorithm for Rail Network Optimization
-
-This script implements the hill climber algorithm to optimize a rail network configuration. The optimization includes adding, deleting, and substituting stations in trajectories to maximize the overall score. The algorithm uses a combination of hill climbing and a greedy algorithm for trajectory generation.
-
-The script also includes functions for running the hill climber algorithm multiple times, visualizing the distribution of scores, and printing the best rail configuration.
-
-Note: The code has been updated with type hints and docstrings for better readability and understanding.
-"""
 
 max_aantal_trajecten: int = 20
 max_aantal_minuten: int = 180
