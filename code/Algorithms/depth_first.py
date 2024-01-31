@@ -1,3 +1,13 @@
+"""
+Depth-First Search Algorithm for Rail Network Optimization
+
+This script applies a depth-first search algorithm for optimizing rail network trajectories. 
+It focuses on the strategic addition of stations to each trajectory, aiming to maximize an overall network score. 
+The optimization process involves evaluating connections, adhering to constraints like maximum trajectory length and station visit frequency, 
+and iteratively refining trajectories. 
+A combination of recursive depth-first exploration and constraint-based validation is used to generate and enhance the rail network configuration.
+"""
+
 import random
 import copy
 import pandas as pd
