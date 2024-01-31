@@ -22,33 +22,58 @@ Run the script to perform a grid search on the specified parameter combinations.
 Examine the results, including the scores obtained for each parameter combination.
 Identify the best parameter set based on the highest score.
 
-## Depth first
+## Depth First
+
+The Depth First Optimization algorithm is a heuristic search algorithm designed to efficiently construct railway trajectories that maximize a given score function. This algorithm operates by iteratively exploring potential stations to add to trajectories, with the aim of improving the overall score of the rail network. Here's an in-depth explanation of how it works:
+
+**Central Hub Identification**
+- The algorithm initiates by identifying central hubs, which are stations with a high number of connections to other stations. These central hubs serve as starting points for creating trajectories.
+- From here the start station gets selected randomly and that station gets removed 
+
+**Depth First Search (DFS) Strategy**
+- For each trajectory, the algorithm employs a DFS strategy. It iteratively adds stations while exploring potential connections. The primary goal is to find the most efficient route, given the constraints. 
+- It also recursively explores the best possible station, trying to get as many different connections as possible
+
+**Station Selection Criteria**
+- When selecting a station it has to follow these heuristics:
+   - The station must not have been visited previously within the same trajectory.
+   - The station must be connected to the previous station in the trajectory.
+   - There's a limit on the maximum number of stations per trajectory.
+   - Stations have a maximum visitation frequency per rail.
+
+**Iterative Approach**
+- The algorithm operates in an iterative manner. It conducts multiple attempts to construct optimal trajectories. If no improvement is observed within a certain threshold, the list of central hubs may be refreshed to encourage exploration of new connections.
+
+**Time Limit**
+- The algorithm also has a time limit to prevent a prolonged runtime. If the time limit is reached, the algorithm stops.
 
 ### Running the Depth First Algorithm
 
-To effectively run the depth first algorithm, follow these steps:
+To effectively run the depth-first algorithm, follow these steps:
 
-### Select the Map
 1. Open `depth_first.py`.
-2. Choose the map you wish to use for the algorithm. You can select either `Holland` or `Nationaal`.
+2. Choose the map you wish to use for the algorithm, either `Holland` or `Nationaal`.
 3. Set the map by changing the value in the `initialize_rail('Holland'/'Nationaal')` function call accordingly.
 4. Additionally, adjust the file path for the map data. Change the `Nationaal` part of the file path to `Holland` if you are using the Holland map.
 
-### Configure Parameters
+**Configuring Parameters**
+
 1. Open `parameter_test_depth_first.py`.
-2. Modify the parameters according to your requirements like: max iterations, max attempts per rail, etc. These parameters will influence the behavior and output of the algorithm.
+2. Modify the parameters according to your requirements.
+   These parameters will influence the behavior and output of the algorithm.
 
-### Run the Algorithm
-Run `parameter_test_depth_first.py`. This will execute the depth first algorithm with the specified parameters and map.
+**Running the Algorithm**
 
-### Output
+Run `parameter_test_depth_first.py`. This will execute the depth-first algorithm with the specified parameters and map.
+
+**Output**
+
 Upon completion, the algorithm provides:
 - A **score** indicating the effectiveness of the generated routes.
 - A **visual map** depicting the routes.
 - A **PNG file** illustrating the progression of scores achieved by the algorithm.
 - To start when inputting the parameter max_aantal_trajecten at 15 and the the minimum amount of stations
 per traject at 3, it will give the score around the 6400/6500 the quickest and consistently 
-
 
 
 ## Ant Colony Optimization
