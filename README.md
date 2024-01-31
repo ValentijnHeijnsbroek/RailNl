@@ -45,3 +45,21 @@ Upon completion, the algorithm provides:
 - A **PNG file** illustrating the progression of scores achieved by the algorithm.
 - To start when inputting the parameter max_aantal_trajecten at 15 and the the minimum amount of stations
 per traject at 3, it will give the score around the 6400/6500 the quickest and consistently 
+
+
+## Ant Colony Optimization
+
+### Runnning ACO:
+Open the 'aco.py' file
+Adjust the parameters to your liking
+Run the aco.py file in the terminal
+The progress will be shown and the final output will be printed in the terminal.
+
+
+### Tuning the parameters:
+
+Open the 'parameter_tuning_aco.py' file
+Scroll all the way down to the defining of the parameter spaces in the parameter_values dictionary
+Add for each key (parameter) in the dictionary the dicrete space you want to search by adding values to the list of that key or by changing the current values.
+Also specify the amount of times you want to try each combination of parameters by setting num_runs. If num_runs is higher than 1, the highest score of the tries per combination will be saved.
+The results will be uploaded to 'best_results.csv'

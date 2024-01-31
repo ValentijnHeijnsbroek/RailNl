@@ -6,7 +6,7 @@ from aco import Ant, ACO
 import time
 from typing import List, Tuple
 
-def run_aco_and_write_to_csv(parameter_set: List[Tuple[int, float, float, int, int, int]], num_runs: int = 20) -> None:
+def run_aco_and_write_to_csv(parameter_set: List[Tuple[int, float, float, int, int, int]], num_runs: int) -> None:
     """
     Runs the ACO algorithm with the given parameter set and writes the results to a CSV file.
     Pre: parameter_set is a list of tuples containing the parameter values to be tested.
@@ -130,14 +130,15 @@ def run_aco_with_time_limit(num_iterations: int, evaporation_rate: float, explor
     return best_score, best_iteration, avg_score, best_trajectories
 
 if __name__ == '__main__':
+    num_runs = 1
     parameter_values = {
         'num_iterations': [50000],
         'evaporation_rate': [0.001, 0.005, 0.01],
-        'exploration_parameter': [0.5],
+        'exploration_parameter': [0.3, 0.5, 0.7],
         'min_trajecten': [3],
         'max_trajecten': [18],
         'end_random_iterations': [1000],
     }
     parameter_set = list(product(*parameter_values.values()))
     
-    run_aco_and_write_to_csv(parameter_set)
+    run_aco_and_write_to_csv(parameter_set, num_runs)
