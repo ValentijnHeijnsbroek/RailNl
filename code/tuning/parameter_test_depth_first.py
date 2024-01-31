@@ -36,5 +36,5 @@ no_improvement_threshold = 20
 best_rail = iterative_depth_first(max_depth, iterations, central_hubs, no_improvement_threshold, max_aantal_minuten, max_aantal_trajecten, threshold_visit_frequency, max_attempts, min_stations, max_time)
 
 best_rail.print_output()
-best_rail.plot_network()
 best_rail.upload_output('depth_first_search.csv')
+best_rail.plot_network()

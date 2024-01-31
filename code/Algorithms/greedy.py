@@ -1,3 +1,15 @@
+"""
+Hill Climber Algorithm for Rail Network Optimization
+
+This script implements the hill climber algorithm to optimize a rail network configuration. 
+The optimization process involves dynamically modifying rail trajectories through the addition, deletion, 
+and substitution of stations within each trajectory to maximize the overall network score. 
+Utilizing a strategic combination of hill climbing techniques alongside a greedy algorithm for initial trajectory generation, 
+the script iteratively refines the network, seeking incremental improvements to approach an optimal configuration.
+"""
+
+
+
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
