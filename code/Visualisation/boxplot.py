@@ -29,7 +29,7 @@ def plot_combined_boxplot(scores_list: List[float], labels: List[str], colors: L
     plt.ylabel('Scores')
     plt.title('Comparison of Algorithm Scores')
     plt.grid(True)
-    plt.show()
+    plt.savefig('../data/pics/boxplot')
 
 # Add the scores inside each of the representavily list
 depth_first_scores = read_scores('/Users/mozouh/Desktop/SIUUU/RailNl/data/scores/depth_first_scores.txt')

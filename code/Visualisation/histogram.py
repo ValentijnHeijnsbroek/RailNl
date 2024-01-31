@@ -28,7 +28,7 @@ def plot_combined_histogram(scores_list: List[float], labels: List):
     plt.title('Comparison of Algorithm Scores')
     plt.legend()
     plt.grid(True)
-    plt.show()
+    plt.savefig('../data/pics/histogram')
 
 # Add the scores inside each of the representavily list
 print("Current working directory:", os.getcwd())
