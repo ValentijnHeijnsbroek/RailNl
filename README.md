@@ -1,7 +1,5 @@
 # Readme
 
-
-To the user
 This repository is dedicated to optimizing the rail network between intercitystations in the netherlands. By optimizing we mean maximizing a so called score-function, which gives us an indication how good a certain solution to this problem really is. This is the formula of the score function: K = p * 10000 - (100 * T + min), where p is the fraction of connections between stations visited, T is the number of trajectories i.e. the number of different train routes, and min is sum of the durations of all the trajectories in minutes. If one wants to maximize this score function, it is essential to try creating a rail network that visits as many unique connections with as few trajectories as possible in as small an amount of time as possible. Furthermore, there is the restriction that an individual trajectory can never be longer than 180 minutes. We have tried to tackle this problem by experimenting with three diferent algorithms: simulated annealing, depth first and ant colony optimization. How these algorithms work and how results can be reproduced, is described below.
 
 ## Hill Climber
