@@ -4,21 +4,21 @@ from typing import List
 
 def read_scores(file_path: str):
     """
-    reads the scores from the from each line
+    Reads the scores from the from each line
 
-    pre: file path name
-    post: a list filled with the scores
+    Pre: file path name
+    Post: a list filled with the scores
     """
     with open(file_path, 'r') as file:
         return [float(line.strip()) for line in file]
 
 def plot_combined_boxplot(scores_list: List[float], labels: List[str], colors: List[str]):
     """
-    gets the score list, the labels for each one and the colors and puts them
-    into a combined boxplot, so that comparison is possible
+    Gets the score list, the labels for each one and the colors and puts them
+    Into a combined boxplot, so that comparison is possible
 
-    pre: scores_list, labels, colors
-    post: a plot where a boxplot is shown for each algorithm
+    Pre: scores_list, labels, colors
+    Post: a plot where a boxplot is shown for each algorithm
     """
     boxplots = plt.boxplot(scores_list, labels=labels, patch_artist=True)
     

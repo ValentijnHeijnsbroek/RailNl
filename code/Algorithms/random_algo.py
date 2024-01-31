@@ -27,6 +27,7 @@ max_aantal_minuten: int = 180
 def random_algorithm(herhalingen: int):
     """
     Runs the random algorithm for the specified number of iterations.
+
     Pre: herhalingen is an integer.
     Post: the score of the random algorithm is returned.
     """

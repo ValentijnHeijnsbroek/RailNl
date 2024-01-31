@@ -26,6 +26,13 @@ max_aantal_minuten = 180
 #Toevoegen dat traject begint bij een station met weinig verbindingen bijv
 
 def greedy_algorithm(herhalingen, min_aantal_trajecten = 5):
+    """
+    Takes the best score possible after adding a station, or traject
+    randomly picks the start station
+
+    Pre: herhalingen, min aantal trajecten
+    Post: Rail based on greedy
+    """
     totaal_herhalingen = herhalingen
     greedy_at_max_score = initialize_rail("Nationaal")
     greedy = initialize_rail("Nationaal")

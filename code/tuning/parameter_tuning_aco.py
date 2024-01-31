@@ -17,6 +17,7 @@ from typing import List, Tuple
 def run_aco_and_write_to_csv(parameter_set: List[Tuple[int, float, float, int, int, int]], num_runs: int = 20) -> None:
     """
     Runs the ACO algorithm with the given parameter set and writes the results to a CSV file.
+
     Pre: parameter_set is a list of tuples containing the parameter values to be tested.
     Post: a CSV file is created containing the results of the ACO algorithm for each parameter combination.
     """
@@ -63,8 +64,9 @@ def run_aco_with_time_limit(num_iterations: int, evaporation_rate: float, explor
                             min_trajecten: int, max_trajecten: int, end_random_iterations: int) -> Tuple[float, int, float]:
     """
     Runs the ACO algorithm with the given parameters and a time limit of 3 minutes per iteration.
+
     Pre: num_iterations is an integer, evaporation_rate is a float, exploration_parameter is a float,
-    min_trajecten is an integer, max_trajecten is an integer, end_random_iterations is an integer.
+         min_trajecten is an integer, max_trajecten is an integer, end_random_iterations is an integer.
     Post: the best score, best iteration, average score and the trajectories of the ACO algorithm are returned.
     """
     rail_network = RailNL()

@@ -25,12 +25,10 @@ def hill_climber(iterations: int, greedy_iterations: int = 1000) -> RailNL:
     """
     Perform hill climber algorithm  to optimize a rail network configuration.
 
-    Parameters:
-    - iterations (int): Number of iterations for the hill climber algorithm.
-    - greedy_iterations (int): Number of iterations for the greedy algorithm.
+    Pre: iterations (int): Number of iterations for the hill climber algorithm.
+         greedy_iterations (int): Number of iterations for the greedy algorithm.
 
-    Returns:
-    - RailNL: Best rail configuration found by the algorithm.
+    Post: RailNL: Best rail configuration found by the algorithm.
     """
     rail_at_max_score: RailNL = initialize_rail("Nationaal")
     current_rail: RailNL = initialize_rail("Nationaal")
@@ -67,12 +65,9 @@ def generate_new_solution(current_rail: RailNL, greedy_iterations: int) -> RailN
     """
     Generate a new rail configuration by applying operations like adding, deleting, or substituting stations.
 
-    Parameters:
-    - current_rail (RailNL): Current rail configuration.
-    - greedy_iterations (int): Number of iterations for the greedy algorithm.
-
-    Returns:
-    - RailNL: New rail configuration.
+    Pre: current_rail (RailNL): Current rail configuration.
+         greedy_iterations (int): Number of iterations for the greedy algorithm.
+    Post: RailNL: New rail configuration.
     """
     if len(current_rail.trajecten) <= 1:
         new_rail = greedy_algorithm(greedy_iterations)
@@ -122,13 +117,10 @@ def run_hill_climber(num_runs: int, iterations: int, greedy_iterations: int = 10
     """
     Run the hill climber algorithm multiple times and return the best rail configuration.
 
-    Parameters:
-    - num_runs (int): Number of runs for the hill climber algorithm.
-    - iterations (int): Number of iterations for each run of the hill climber algorithm.
-    - greedy_iterations (int): Number of iterations for the greedy algorithm.
-
-    Returns:
-    - RailNL: Best rail configuration found across multiple runs.
+    Pre: num_runs (int): Number of runs for the hill climber algorithm.
+         iterations (int): Number of iterations for each run of the hill climber algorithm.
+         greedy_iterations (int): Number of iterations for the greedy algorithm.
+    Post:  RailNL: Best rail configuration found across multiple runs.
     """
     best_rail: RailNL = None
     best_score: int = 0

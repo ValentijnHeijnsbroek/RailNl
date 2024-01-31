@@ -4,21 +4,21 @@ from typing import List
 
 def read_scores(file_path: str):
     """
-    reads the scores from the from each line
+    Reads the scores from the from each line
 
-    pre: file path name
-    post: a list filled with the scores
+    Pre: file path name
+    Post: a list filled with the scores
     """
     with open(file_path, 'r') as file:
         return [float(line.strip()) for line in file]
 
 def plot_combined_histogram(scores_list: List[float], labels: List):
     """
-    gets the score list, the labels for each one and puts them
-    into a combined histogram, so that comparison is possible
+    Gets the score list, the labels for each one and puts them
+    Into a combined histogram, so that comparison is possible
 
-    pre: scores_list, labels
-    post: a plot where histograms are shown for each algorithm
+    Pre: scores_list, labels
+    Post: a plot where histograms are shown for each algorithm
     """
     for scores, label in zip(scores_list, labels):
         plt.hist(scores, bins=50, alpha=0.7, label=label)

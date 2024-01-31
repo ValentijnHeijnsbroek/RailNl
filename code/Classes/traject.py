@@ -23,8 +23,8 @@ class Traject:
         """
         Add stations to the traject. If it was already in the traject list, it goes to the next one that is connected to the given station.
 
-        pre: station object to add to the traject
-        post: if the traject is empty, station is added to the traject_stations list.
+        Pre: station object to add to the traject
+        Post: if the traject is empty, station is added to the traject_stations list.
               if it isnt empty a connected station is added to the list and if it isnt in 
               the traject already
         """
@@ -44,8 +44,8 @@ class Traject:
         """
         Checks if a given station is already present in the traject.
 
-        pre: station object
-        post: bool like that give true if the station is in the traject_stations list and 
+        Pre: station object
+        Post: bool like that give true if the station is in the traject_stations list and 
               false if it isnt there
         """
         return station in self.traject_stations
@@ -54,8 +54,8 @@ class Traject:
         """
         Deletes a specific station from the traject_stations list if it exists in the list.
 
-        pre: station object 
-        post: removes the station if it is in the traject_stations list
+        Pre: station object 
+        Post: removes the station if it is in the traject_stations list
         """
         if station in self.traject_stations:
             self.traject_stations.remove(station)
@@ -65,7 +65,7 @@ class Traject:
         Deletes the latest station from the traject_stations list, 
         if the traject_stations list is not empty
 
-        post: traject deletes the latest station added if the traject_stations list in not empty
+        Post: traject deletes the latest station added if the traject_stations list in not empty
         """
         if self.traject_stations:
             self.traject_stations.pop()
@@ -75,7 +75,7 @@ class Traject:
         """
         Returns a random connected station to the last station in the traject_stations list.
 
-        post: if the traject is empty, 'station' is added to the traject_stations list.
+        Post: if the traject is empty, 'station' is added to the traject_stations list.
               if the traject_stations list is not empty and there are connected stations to the last station, a random connected station is returned.    
         """
         # Checks what connections the station has
@@ -95,7 +95,7 @@ class Traject:
         """
         Returns the last station in the traject_stations list.
 
-        post: returns lastest addition to the traject if the traject_stations list isnt empty
+        Post: returns lastest addition to the traject if the traject_stations list isnt empty
               otherwise it returns None 
         """
         if self.traject_stations:

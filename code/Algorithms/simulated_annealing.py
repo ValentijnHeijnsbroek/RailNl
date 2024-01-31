@@ -33,16 +33,13 @@ def simulated_annealing(temperature: float, cooling_rate: float, iterations: int
     """
     Run simulated annealing algorithm.
 
-    Args:
-    - temperature (float): Initial temperature for simulated annealing
-    - cooling_rate (float): Cooling rate for simulated annealing
-    - iterations (int): Number of iterations for simulated annealing
-    - greedy_iterations (int): Number of iterations for the greedy algorithm within each iteration of simulated annealing
-    - min_aantal_trajecten (int): Minimum number of trajectories
-    - new_solution_iterations (int): Number of iterations to generate a new solution
-
-    Returns:
-    - RailNL: Best RailNL object obtained through simulated annealing
+    Pre: temperature (float): Initial temperature for simulated annealing
+         cooling_rate (float): Cooling rate for simulated annealing
+         iterations (int): Number of iterations for simulated annealing
+         greedy_iterations (int): Number of iterations for the greedy algorithm within each iteration of simulated annealing
+         min_aantal_trajecten (int): Minimum number of trajectories
+         new_solution_iterations (int): Number of iterations to generate a new solution
+    Post: RailNL: Best RailNL object obtained through simulated annealing
     """
     rail_at_max_score: RailNL = initialize_rail("Nationaal")
     current_rail: RailNL = initialize_rail("Nationaal")
@@ -93,13 +90,10 @@ def generate_new_solution(current_rail: RailNL, greedy_iterations: int, min_aant
     """
     Generate a new solution based on the current rail.
 
-    Args:
-    - current_rail (RailNL): Current RailNL object
-    - greedy_iterations (int): Number of iterations for the greedy algorithm
-    - min_aantal_trajecten (int): Minimum number of trajectories
-
-    Returns:
-    - RailNL: New RailNL object
+    Pre: current_rail (RailNL): Current RailNL object
+         greedy_iterations (int): Number of iterations for the greedy algorithm
+         min_aantal_trajecten (int): Minimum number of trajectories
+    Post: RailNL: New RailNL object
     """
     if len(current_rail.trajecten) <= 1:
         new_rail: RailNL = greedy_algorithm(greedy_iterations, min_aantal_trajecten)
@@ -154,13 +148,10 @@ def accept_solution(current_score: int, new_score: int, temperature: float) -> b
     """
     Accepts or rejects a new solution based on the Metropolis criterion.
 
-    Args:
-    - current_score (int): Current score
-    - new_score (int): New score
-    - temperature (float): Current temperature
-
-    Returns:
-    - bool: True if the new solution is accepted, False otherwise
+    Pre: current_score (int): Current score
+         new_score (int): New score
+         temperature (float): Current temperature
+    Post:bool: True if the new solution is accepted, False otherwise
     """
     if new_score > current_score:
         return True
@@ -174,17 +165,14 @@ def run_simulated_annealing(num_runs: int, temperature: float, cooling_rate: flo
     """
     Run simulated annealing multiple times and return the best rail.
 
-    Args:
-    - num_runs (int): Number of runs
-    - temperature (float): Initial temperature for simulated annealing
-    - cooling_rate (float): Cooling rate for simulated annealing
-    - iterations (int): Number of iterations for simulated annealing
-    - greedy_iterations (int): Number of iterations for the greedy algorithm within each iteration of simulated annealing
-    - min_aantal_trajecten (int): Minimum number of trajectories
-    - new_solution_iterations (int): Number of iterations to generate a new solution
-
-    Returns:
-    - RailNL: Best RailNL object obtained through simulated annealing
+    Pre: num_runs (int): Number of runs
+         temperature (float): Initial temperature for simulated annealing
+         cooling_rate (float): Cooling rate for simulated annealing
+         iterations (int): Number of iterations for simulated annealing
+         greedy_iterations (int): Number of iterations for the greedy algorithm within each iteration of simulated annealing
+         min_aantal_trajecten (int): Minimum number of trajectories
+         new_solution_iterations (int): Number of iterations to generate a new solution
+    Post: RailNL: Best RailNL object obtained through simulated annealing
     """
     best_rail: RailNL = None
     best_score: int = 0

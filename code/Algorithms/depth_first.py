@@ -33,8 +33,8 @@ def find_central_hubs(connection_data: pd.DataFrame) -> List[str]:
     """
     Makes a list of the stations with the most connections to the least connection
 
-    pre: connection data of each station
-    post: central hubs list
+    Pre: connection data of each station
+    Post: central hubs list
     """
     connection_counts: pd.Series = (connection_data['station1'].value_counts() + connection_data['station2'].value_counts()).fillna(0)
     
@@ -49,9 +49,9 @@ def can_add_station(traject: RailNL, station: Station, visited_stations: Set[Sta
     """
     Checks whether the station can be added to the traject or not
 
-    pre: traject object, station object and a variable that checks how many times the station has
+    Pre: traject object, station object and a variable that checks how many times the station has
         been in the rail
-    post: True or False
+    Post: True or False
     """
     # Dont add the same station as before
     if len(traject.traject_stations) > 0:
@@ -81,8 +81,8 @@ def update_uncovered_connections(uncovered_connections: Set[tuple], traject: Tra
     When a connection has been made it has been covered and then that connection has to
     be removed from the uncovered list
 
-    pre: uncovered connection set, and traject object
-    post: updated uncovered connection list for the rail
+    Pre: uncovered connection set, and traject object
+    Post: updated uncovered connection list for the rail
     """
     if len(traject.traject_stations) >= 2:
 
@@ -110,10 +110,10 @@ def depth_first_search(rail: RailNL, traject: Traject, traject_index: int, visit
     This function recursively explores potential stations to add,
     aiming to improve the overall score of the rail network.
 
-    pre: rail object, traject object, traject index,
+    Pre: rail object, traject object, traject index,
          visited_stations set, uncovered connection set, current depth int
          max depth int, current score float, and a central hub list.
-    post: returns True if adding a station improves the score and meets constraints, otherwise False.
+    Post: returns True if adding a station improves the score and meets constraints, otherwise False.
           updates the trajectory and uncovered connections as stations are added.
     """
     if current_depth >= max_depth:
@@ -166,8 +166,8 @@ def iterative_depth_first(max_depth: int, iterations: int, central_hubs: List[st
     The function iterates over multiple attempts to construct an optimal set of trajectories
     aiming to maximize a scoring function given constraints.
 
-    pre: max depth int, iterations int, central hubs list, and a no improvement threshold
-    post: returns the best rail network configuration found after all iterations
+    Pre: max depth int, iterations int, central hubs list, and a no improvement threshold
+    Post: returns the best rail network configuration found after all iterations
     """
     # Record the start time for the time limit feature
     start_time: time = time.time()  
