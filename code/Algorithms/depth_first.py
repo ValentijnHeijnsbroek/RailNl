@@ -236,7 +236,7 @@ def iterative_depth_first(max_depth: int, iterations: int, central_hubs: List[st
                 traject_index -= 1  # If trajectory not valid, decrement traject index
 
             # Write scores to file
-            with open('../data/depth_first_scores.txt', 'w') as f:
+            with open('../data/scores/depth_first_scores.txt', 'w') as f:
                 for score in iteration_scores:
                     f.write(f"{score}\n")
 

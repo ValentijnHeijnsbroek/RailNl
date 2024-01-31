@@ -39,7 +39,7 @@ def greedy_algorithm(herhalingen, min_aantal_trajecten = 5):
                     break
         current_score = greedy.get_score()
         score_list.append(current_score)  
-        with open('../data/greedy_scores.txt', 'w') as f:
+        with open('../data/scores/greedy_scores.txt', 'w') as f:
                 for score in score_list:
                     f.write(f"{score}\n")
 

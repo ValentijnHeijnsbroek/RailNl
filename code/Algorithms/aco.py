@@ -251,7 +251,7 @@ if __name__ == "__main__":
         list_scores.append(aco.total_score(rail_network))
         
           # to save data in a txt file to compare in a histogram
-        with open('../data/aco_scores.txt', 'w') as f:
+        with open('../data/scores/aco_scores.txt', 'w') as f:
                 for score in list_scores:
                     f.write(f"{score}\n")
 

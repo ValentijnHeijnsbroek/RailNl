@@ -56,7 +56,7 @@ def random_algorithm(herhalingen: int):
         #     min_score = baseline.get_score()
         #     baseline_at_min_score = baseline
         score_list.append(current_score)  
-        with open('../data/random_scores.txt', 'w') as f:
+        with open('../data/scores/random_scores.txt', 'w') as f:
                 for score in score_list:
                     f.write(f"{score}\n")
 

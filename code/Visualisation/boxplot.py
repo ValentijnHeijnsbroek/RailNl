@@ -32,11 +32,11 @@ def plot_combined_boxplot(scores_list: List[float], labels: List[str], colors: L
     plt.show()
 
 # Add the scores inside each of the representavily list
-depth_first_scores = read_scores('/Users/mozouh/Desktop/SIUUU/RailNl/data/depth_first_scores.txt')
-aco_scores = read_scores('/Users/mozouh/Desktop/SIUUU/RailNl/data/aco_scores.txt')
-sim_annealing_scores = read_scores('/Users/mozouh/Desktop/SIUUU/RailNl/data/simulated_annealing_scores.txt')
-random_scores = read_scores('/Users/mozouh/Desktop/SIUUU/RailNl/data/random_scores.txt')
-greedy_scores = read_scores('/Users/mozouh/Desktop/SIUUU/RailNl/data/greedy_scores.txt')
+depth_first_scores = read_scores('/Users/mozouh/Desktop/SIUUU/RailNl/data/scores/depth_first_scores.txt')
+aco_scores = read_scores('/Users/mozouh/Desktop/SIUUU/RailNl/data/scores/aco_scores.txt')
+sim_annealing_scores = read_scores('/Users/mozouh/Desktop/SIUUU/RailNl/data/scores/simulated_annealing_scores.txt')
+random_scores = read_scores('/Users/mozouh/Desktop/SIUUU/RailNl/data/scores/random_scores.txt')
+greedy_scores = read_scores('/Users/mozouh/Desktop/SIUUU/RailNl/data/scores/greedy_scores.txt')
 
 # The colors to distinguish each boxplot from another
 colors = ["blue", "green", "red", "lime", "purple"]  

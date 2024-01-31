@@ -200,7 +200,7 @@ def run_simulated_annealing(num_runs: int, temperature: float, cooling_rate: flo
         current_score: int = rail_at_max_score.get_score()
         scores_list.append(current_score)
         # to save data in a txt file to compare in a histogram
-        with open('../data/simulated_annealing_scores.txt', 'w') as file:
+        with open('../data/scores/simulated_annealing_scores.txt', 'w') as file:
             for score in scores_list:
                 file.write(f"{score}\n")
 
