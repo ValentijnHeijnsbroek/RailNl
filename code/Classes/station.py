@@ -1,3 +1,11 @@
+"""
+Station Class
+This script introduces a Station class representing a train station. 
+The class encapsulates essential attributes such as the station's name and coordinates (x, y). 
+The key functionalities include adding connections with durations, checking for existing connections, and retrieving connection durations.
+
+"""
+
 from typing import Any
 
 class Station:

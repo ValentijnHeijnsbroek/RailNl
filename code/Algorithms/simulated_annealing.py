@@ -1,3 +1,11 @@
+"""
+Simulated Annealing Algorithm for Rail Network Optimization
+
+This script implements the simulated annealing algorithm to optimize a rail network configuration. 
+The optimization includes adding, deleting, and substituting stations in trajectories to maximize the overall score. 
+The algorithm uses a greedy algorithm to get a base state.
+
+"""
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -12,17 +20,8 @@ import copy
 
 import matplotlib.pyplot as plt
 from itertools import product
-from help_funtions import initialize_rail, greedy_decision
+from help_funtions import initialize_rail, greedy_decision  
 from greedy import greedy_algorithm
-
-"""
-Simulated Annealing Algorithm for Rail Network Optimization
-
-This script implements the simulated annealing algorithm to optimize a rail network configuration. 
-The optimization includes adding, deleting, and substituting stations in trajectories to maximize the overall score. 
-The algorithm uses a greedy algorithm to get a base state.
-
-"""
 
 max_aantal_trajecten: int = 20
 max_aantal_minuten: int = 180
@@ -253,7 +252,7 @@ initial_temperature = 10000
 cooling_rate = 0.005
 iterations = 1500
 min_aantal_trajecten = 10
-greedy_iterations = 200
+greedy_iterations = 500
 new_solution_iterations = 1
 
 

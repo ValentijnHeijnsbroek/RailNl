@@ -1,8 +1,16 @@
+"""
+RailNL Class
+
+This script features a tool for configuring a rail network. 
+It employs classes like RailNL, Station, and Traject to model the rail system. 
+The primary functionalities include loading station and connection data, visualizing the rail network, calculating scores, and generating output. 
+
+"""
+
 from .station import Station
 from .traject import Traject
 from matplotlib.widgets import CheckButtons
 from typing import Any, Optional
-
 import mplcursors
 import geopandas as gpd
 import csv

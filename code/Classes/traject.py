@@ -1,3 +1,11 @@
+"""
+Traject Class
+This script introduces a Traject class representing a traject.
+The class encapsulates essential attributes such as the traject's duration and traject stations.
+The key functionalities include adding stations to the traject, checking if a station is already visited, deleting a station and returning a random connected station.
+
+"""
+
 from .station import Station
 from typing import Any
 import random
