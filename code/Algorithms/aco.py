@@ -204,14 +204,15 @@ max_trajecten: int = 18
 end_random_iterations: int = 1000
 calculations_done: bool = False
 threshold: int = 7000
-
+network_size_stations = 'StationsNationaal.csv'
+network_size_connections = 'ConnectiesNationaal.csv'
 # main loop
 if __name__ == "__main__":
     rail_network = RailNL()
     aco = ACO()
-    rail_network.load_stations('StationsNationaal.csv')
-    rail_network.load_connections('ConnectiesNationaal.csv')
-    aco.set_pheromones('ConnectiesNationaal.csv')
+    rail_network.load_stations(network_size_stations)
+    rail_network.load_connections(network_size_connections)
+    aco.set_pheromones(network_size_connections)
     best_score: float = 0
     best_netwerk: Union[None, Dict[Ant, List['Station']]] = None
     best_duration: int = 0
@@ -256,7 +257,7 @@ if __name__ == "__main__":
 
         avg_score = sum(list_scores) / len(list_scores)
         if i % 10 == 0:
-            print(f"{round(i / num_iterations * 100, 2)} %", avg_score, best_score, best_score_not_changed, exploration_parameter)
+            print(f"{round(i / num_iterations * 100, 2)} %", avg_score, best_score, best_score_not_changed)
 
         for ant, trajectory in aco.totaal_trajecten.items():
             station_names = [station.name for station in trajectory]
@@ -280,10 +281,9 @@ if __name__ == "__main__":
             
         
     print("Best score:", best_score)
-    print("Best duration:", best_duration)
     print("Best iteration:", best_iteration)
 
     for trajectory in best_netwerk.values():
         station_names = [station.name for station in trajectory]
         print(station_names)
-    print(best_scores_num_traject)
+    

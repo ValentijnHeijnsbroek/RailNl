@@ -52,19 +52,27 @@ per traject at 3, it will give the score around the 6400/6500 the quickest and c
 
 
 ## Ant Colony Optimization
-Ant Colony Optimization (ACO) is inspired by how an ant colony finds the best routes to food: if an ants dicsovers a fast route, it will leave a trail of pheromones behind that other ants can smell. Stronger pheromone levels mean better or faster routes. In this manner, ants can very quickly find the best path to their food. In our code it works almost the same: each iteration a certain amount of 'ants' is deployed over stations. Each ant represents a possible trajectory. Beforehand a predetermined amount of pheromones is set to all connections. Each ant will choose his next station based on the pheromone levels of that connection that are left behind by ants in previous generations. At the end of each iteration the highest of the trajectories (ants) will be rewarded by giving all the connections in that trajectory some extra pheromones. To avoid pheromone levels getting too high, and thereby unstimulating the ants to explore not yet dicsovered connections, each iteration all connections are deducted a small amount of their pheromones(evaporation_rate). To further explore possible solutions, a parameter is specified(end_random_iterations) that controls when the number of ants are no longer randomly chosen, but chosen based on previous iterations. By correctly tuning the parameters, this algorithm can be used to optimise the score function. If for a certain amount of iterations(threshold) the algorithm doesn't yield a score that's at least 10 points higher than the previous highscore , the algorithm will stop.
+Ant Colony Optimization (ACO) is inspired by how an ant colony finds the best routes to food: if an ants dicsovers a fast route, it will leave a trail of pheromones behind that other ants can smell. Stronger pheromone levels mean better or faster routes. In this manner, ants can very quickly find the best path to their food. In our code it works almost the same: each iteration a certain amount of 'ants' is deployed over stations. Each ant represents a possible trajectory. Beforehand a predetermined amount of pheromones is set to all connections. Each ant will choose his next station based on the pheromone levels of that connection that are left behind by ants in previous generations. At the end of each iteration the highest of the trajectories (ants) will be rewarded by giving all the connections in that trajectory some extra pheromones. 
 
-### Runnning ACO:
-Open the 'aco.py' file
-Adjust the parameters to your liking
-Run the aco.py file in the terminal
-The progress will be shown and the final output will be printed in the terminal.
+To avoid pheromone levels getting too high, and thereby unstimulating the ants to explore not yet dicsovered connections, each iteration all connections are deducted a small amount of their pheromones(evaporation_rate). To further explore possible solutions, a parameter is specified(end_random_iterations) that controls when the number of ants are no longer randomly chosen, but chosen based on previous iterations. By correctly tuning the parameters, this algorithm can be used to optimise the score function. If for a certain amount of iterations(threshold) the algorithm doesn't yield a score that's at least 10 points higher than the previous highscore , the algorithm will stop.
 
+### Choosing map size and parameters
+1: Open the 'aco.py' file
+2: Choose the map size by setting the network_size_stations and the network_size_connections variables. By default StationsNationaal.csv   en ConnectiesNationaal.csv
+3: Set the other parameters to your liking
 
-### Tuning the parameters:
+### Run the algorithm:
+Run the algorithm by executing the aco.py file
 
+### Output:
+The output will appear in the terminal.
+From left to right: percentage showing the progress made, average score so far, highest score so far and number of iterations without highest score changing. When the algorithm is finished it will output the highest score, the iteration in wchich the highest score was achieved and the trajectories of the highest score.
+
+### Parameter tuning
 Open the 'parameter_tuning_aco.py' file
 Scroll all the way down to the defining of the parameter spaces in the parameter_values dictionary
 Add for each key (parameter) in the dictionary the dicrete space you want to search by adding values to the list of that key or by changing the current values.
 Also specify the amount of times you want to try each combination of parameters by setting num_runs. If num_runs is higher than 1, the highest score of the tries per combination will be saved.
 The results will be uploaded to 'best_results.csv'
+
+
