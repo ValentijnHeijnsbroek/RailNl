@@ -110,8 +110,13 @@ class RailNL():
 
         # Plot connections from trajecten
         line_styles = ['-', '--', '-.', ':']
-        traject_lines = []  # Keep track of lines associated with each traject
-        traject_labels = []  # Keep track of unique traject labels for legend
+
+        # Keep track of lines associated with each traject
+        traject_lines = []
+
+        # Keep track of unique traject labels for legend
+        traject_labels = []
+
         for traject_index in self.trajecten:
             traject_stations = self.trajecten[traject_index].traject_stations
             colorr = plt.cm.rainbow(traject_index / len(self.trajecten))
@@ -182,6 +187,7 @@ class RailNL():
             line_handles.append(lines[0])  # Only add the first line of each trajectory to the legend
             line_labels.append(label)
 
+        # Updates the visibility of the trajects when the checkbox next to it is clicked
         def update_visibility(label):
             traject_index = int(label.split()[-1])  # Extract traject index from label
 
