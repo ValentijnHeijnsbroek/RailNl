@@ -224,7 +224,7 @@ def run_simulated_annealing(num_runs: int, temperature: float, cooling_rate: flo
     plt.title("Simulated Annealing Progress")
     plt.legend()
     plt.axhline(y=best_score, color='red', linestyle='--', label=f'Max Score: {best_score}')
-    plt.savefig('Simulated_Annealing_process.png')
+    plt.savefig('pics/Simulated_Annealing_process.png')
     plt.close()
 
     # Calculate average score
@@ -242,12 +242,12 @@ def run_simulated_annealing(num_runs: int, temperature: float, cooling_rate: flo
         plt.ylabel('Frequency')
         plt.title(f"Simulated Annealing Progress\nInitial Temperature: {temperature}, Cooling Rate: {cooling_rate}, Iterations: {iterations}, num_runs: {num_runs}\n Average Score: {average_score}")
         plt.legend()
-        plt.savefig('Score_Distribution_Simulated_Annealing_Clustered.png')
+        plt.savefig('pics/Score_Distribution_Simulated_Annealing_Clustered.png')
 
     return best_rail
 
 
-num_runs = 5
+num_runs = 6
 initial_temperature = 10000
 cooling_rate = 0.005
 iterations = 1500
