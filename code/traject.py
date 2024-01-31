@@ -32,7 +32,7 @@ class Traject:
                 elif station not in last_station.connections:
                     print(f"ERROR: Station {station.name} not in connection with traject")
     
-    def is_bereden(self, station: Station) -> bool:
+    def is_visited(self, station: Station) -> bool:
         """
         Checks if a given station is already present in the traject.
 
@@ -73,7 +73,7 @@ class Traject:
         # Checks what connections the station has
         if self.traject_stations:
             last_station = self.traject_stations[-1]
-            list_possible_stations = [station for station in last_station.connections if not self.is_bereden(station)]
+            list_possible_stations = [station for station in last_station.connections if not self.is_visited(station)]
             if list_possible_stations:
                 random_station = random.choice(list_possible_stations)
                 return random_station

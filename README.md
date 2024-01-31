@@ -1,5 +1,8 @@
 # Readme
 
+
+To the user
+This repository is dedicated to optimizing the rail network between intercitystations in the netherlands. By optimizing we mean maximizing a so called score-function, which gives us an indication how good a certain solution to this problem really is. This is the formula of the score function: K = p * 10000 - (100 * T + min), where p is the fraction of connections between stations visited, T is the number of trajectories i.e. the number of different train routes, and min is sum of the durations of all the trajectories in minutes. If one wants to maximize this score function, it is essential to try creating a rail network that visits as many unique connections with as few trajectories as possible in as small an amount of time as possible. Furthermore, there is the restriction that an individual trajectory can never be longer than 180 minutes. We have tried to tackle this problem by experimenting with three diferent algorithms: simulated annealing, depth first and ant colony optimization. How these algorithms work and how results can be reproduced, is described below.
 ## Simulated Annealing
 
 ### Running Simulated Annealing:
@@ -47,7 +50,9 @@ Upon completion, the algorithm provides:
 per traject at 3, it will give the score around the 6400/6500 the quickest and consistently 
 
 
+
 ## Ant Colony Optimization
+Ant Colony Optimization (ACO) is inspired by how an ant colony finds the best routes to food: if an ants dicsovers a fast route, it will leave a trail of pheromones behind that other ants can smell. Stronger pheromone levels mean better or faster routes. In this manner, ants can very quickly find the best path to their food. In our code it works almost the same: each iteration a certain amount of 'ants' is deployed over stations. Each ant represents a possible trajectory. Beforehand a predetermined amount of pheromones is set to all connections. Each ant will choose his next station based on the pheromone levels of that connection that are left behind by ants in previous generations. At the end of each iteration the highest of the trajectories (ants) will be rewarded by giving all the connections in that trajectory some extra pheromones. To avoid pheromone levels getting too high, and thereby unstimulating the ants to explore not yet dicsovered connections, each iteration all connections are deducted a small amount of their pheromones(evaporation_rate). To further explore possible solutions, a parameter is specified(end_random_iterations) that controls when the number of ants are no longer randomly chosen, but chosen based on previous iterations. By correctly tuning the parameters, this algorithm can be used to optimise the score function. If for a certain amount of iterations(threshold) the algorithm doesn't yield a score that's at least 10 points higher than the previous highscore , the algorithm will stop.
 
 ### Runnning ACO:
 Open the 'aco.py' file
