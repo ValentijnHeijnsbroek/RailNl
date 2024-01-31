@@ -12,7 +12,7 @@ import copy
 
 import matplotlib.pyplot as plt
 from itertools import product
-from help_funtions import *
+from help_funtions import initialize_rail, greedy_decision
 from greedy import greedy_algorithm
 
 """
@@ -68,11 +68,6 @@ def simulated_annealing(temperature: float, cooling_rate: float, iterations: int
 
         iterations_list.append(iteration)
         scores_list.append(new_score)
-
-        # to save data in a txt file to compare in a histogram
-        with open('../data/simulated_annealing_scores.txt', 'w') as file:
-            for score in scores_list:
-                file.write(f"{score}\n")
 
         # Decide whether to accept the new solution
         if accept_solution(current_score, new_score, current_temperature):
@@ -205,6 +200,10 @@ def run_simulated_annealing(num_runs: int, temperature: float, cooling_rate: flo
         )
         current_score: int = rail_at_max_score.get_score()
         scores_list.append(current_score)
+        # to save data in a txt file to compare in a histogram
+        with open('../data/simulated_annealing_scores.txt', 'w') as file:
+            for score in scores_list:
+                file.write(f"{score}\n")
 
         print(f"Score for run {run}: {current_score}")
 
@@ -249,7 +248,7 @@ def run_simulated_annealing(num_runs: int, temperature: float, cooling_rate: flo
     return best_rail
 
 
-num_runs = 50
+num_runs = 5
 initial_temperature = 10000
 cooling_rate = 0.005
 iterations = 1500

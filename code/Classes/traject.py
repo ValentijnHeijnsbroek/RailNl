@@ -1,4 +1,4 @@
-from station import Station
+from .station import Station
 from typing import Any
 import random
 
