@@ -33,12 +33,12 @@ class RailNL():
 
     def load_stations(self, station_filename: str) -> None:
         """
-        loads stations into 2 different lists one for the name and 
+        Loads stations into 2 different lists one for the name and 
         the other into a list of station variables
         The station names also get saved inside of a dictionary connected to an empty list
 
-        pre: station_filename string
-        post: the station objects gets loaded inside of the self.stations list
+        Pre: station_filename string
+        Post: the station objects gets loaded inside of the self.stations list
         """
         
         with open(station_filename, 'r') as file:
@@ -53,13 +53,13 @@ class RailNL():
 
     def load_connections(self, connection_filename: str) -> None:
         """
-        loads the connections between stations and puts a station's connections with
+        Loads the connections between stations and puts a station's connections with
         each station it has inside of a list.
         It also adds the distance between the connected station as a float with the
         2 stations being the key for that
 
-        pre: connection_filename string
-        post: station connection formed 
+        Pre: connection_filename string
+        Post: station connection formed 
         """
         with open(connection_filename, 'r') as file:
             reader = csv.reader(file)
@@ -88,10 +88,10 @@ class RailNL():
         # using the name of the station to get the station variable 
     def get_station_by_name(self, station_name: str) -> Any:
         """
-        uses the name of a station to give the station object
+        Uses the name of a station to give the station object
 
-        pre: station_name string
-        post: the station object or None depending if the station object with the station name exists 
+        Pre: station_name string
+        Post: the station object or None depending if the station object with the station name exists 
         """
         for station in self.stations:
             if station.name == station_name:
@@ -101,11 +101,11 @@ class RailNL():
     
     def plot_network(self) -> None:
         """
-        creates a plot showing the trajects with different lines and it also shows
+        Creates a plot showing the trajects with different lines and it also shows
         the station with their corresponding name when hovering over it.
         The user can also pick which trajects are shown or not using the checkboxes.
 
-        post: A plot with the Netherlands as background, the trajects shown with lines, and the 
+        Post: A plot with the Netherlands as background, the trajects shown with lines, and the 
             stations are shown as points.
         """
         # Read GeoJSON file for background
@@ -228,10 +228,10 @@ class RailNL():
     
     def get_station_by_coordinates(self, x: float, y: float) -> Optional[Station]:
         """
-        uses the coordinates to get the station object connected to it
+        Uses the coordinates to get the station object connected to it
 
-        pre: x and y floats 
-        post: return the station object or None, depending on if the station object exist or not
+        Pre: x and y floats 
+        Post: return the station object or None, depending on if the station object exist or not
         """
         epsilon: float = 0.01
         for station in self.stations:
@@ -243,9 +243,9 @@ class RailNL():
     # Calculates and returns score.
     def get_score(self) -> float:
         """
-        calculates the K score as defined on the case website, returns an integer
+        Calculates the K score as defined on the case website, returns an integer
         
-        post: calculates the score based on:
+        Post: calculates the score based on:
               p: what perecentage of all the connections are covered
               T: the amount of trajects inside of the RailNL
               sum_min: de total time of all the trajects
@@ -278,10 +278,10 @@ class RailNL():
     
     def create_traject(self, traject_index) -> Traject:
         """
-        creates a new empty traject and adds a traject_index to it
+        Creates a new empty traject and adds a traject_index to it
 
-        pre: traject index integer
-        post: an empty traject with a traject_index connected to it inside the dictionary
+        Pre: traject index integer
+        Post: an empty traject with a traject_index connected to it inside the dictionary
         """
         traject: 'Traject' = Traject()
     
@@ -294,8 +294,8 @@ class RailNL():
         """
         calculates the sum time of the traject
 
-        pre: traject index 
-        post: the total duration of the traject 
+        Pre: traject index 
+        Post: the total duration of the traject 
         """
         
         duration: int = 0
@@ -312,12 +312,13 @@ class RailNL():
     # Saves output to csv file.
     def upload_output(self, output_filename) -> csv:
         """
-        uploads the output inside the file_name 
+        Uploads the output inside the file_name 
 
-        pre: the outputname of the file name which is a string
-        post: file gets created with the output and score
+        Pre: the outputname of the file name which is a string
+        Post: file gets created with the output and score
         """
-        with open(output_filename, 'w', newline='') as file:
+        output_path = f'output/{output_filename}'
+        with open(output_path, 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(['train', 'stations'])
             for i in range(1, len(self.trajecten) + 1): 
@@ -329,9 +330,9 @@ class RailNL():
     # Prints example output
     def print_output(self) -> str:
         """
-        prints out the example output with the score and the total time for each traject
+        Prints out the example output with the score and the total time for each traject
 
-        post: output gets printed inside the terminal
+        Post: output gets printed inside the terminal
         """
         for j in range(1, len(self.trajecten) +1 ):
             if self.trajecten[j].traject_stations == []:
@@ -347,28 +348,28 @@ class RailNL():
     # Method that clears all the trajects of the railnl instance.
     def clear_trajecten(self) -> None:
         """
-        gets rid of all trajects inside the railnl
+        Gets rid of all trajects inside the railnl
 
-        post: self.trajecten gets emptied
+        Post: self.trajecten gets emptied
         """
         self.trajecten = {}
 
 
     def get_num_connections(self) -> int:
         """
-        looks at how many total connections there are from the connections file 
+        Looks at how many total connections there are from the connections file 
 
-        post: self.amount_of_connections
+        Post: self.amount_of_connections
         """
         return self.amount_of_connections
 
         # Delete traject, and adjusts every traject index so that it is numbered from 1 to len(trajecten)
     def delete_traject(self, traject_index: int) -> None:
         """
-        deletes a specific traject when a traject_index is given
+        Deletes a specific traject when a traject_index is given
 
-        pre: traject_index integer
-        post: the specific traject gets deleted 
+        Pre: traject_index integer
+        Post: the specific traject gets deleted 
         """
         if traject_index in self.trajecten:
             del self.trajecten[traject_index]

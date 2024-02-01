@@ -32,7 +32,7 @@ class Ant:
     def get_duration(self) -> int:
         """
         Returns the duration of the trajectory of the ant.
-        Pre: -
+
         Post: The duration of the traject of the ant is returned.
         """	
         duration_traject = 0
@@ -47,6 +47,7 @@ class Ant:
     def get_score(self, rail_network: 'RailNL') -> float:
         """
         Returns the score of the traject of an individual ant using the provided score-function.
+
         Pre: rail_network is a rail network.
         Post: The score of the traject of an individual ant is returned.
         """	
@@ -69,6 +70,7 @@ class ACO:
     def set_pheromones(self, connection_filename: str) -> None:
         """
         Initializes the pheromones dictionary of the connections in the rail network.
+
         Pre: connection_filename is the name of a file containing the connections of the rail network.
         Post: The pheromones dictionary of the connections in the rail network is initialized.
         """
@@ -86,6 +88,7 @@ class ACO:
     def deploy_ants(self, rail_network: 'RailNL', num_ants: int) -> List[Ant]:
         """
         Deploys a specified number of ants on the rail network.
+
         Pre: rail_network is a rail network, num_ants is an integer.
         Post: A list of ants is returned.
         """	
@@ -96,6 +99,7 @@ class ACO:
     def get_connections(self, station: str) -> Dict[str, float]:
         """
         Extracts the connections of a station from the pheromones dictionary.
+
         Pre: station is the name of a station in the rail network.
         Post: A dictionary containing the connections of the station and their pheromone values is returned.
         """
@@ -108,6 +112,7 @@ class ACO:
         Determines the next station for an ant to visit by looking into the possible connections. 
         Then a weighted random decision is made based on the level of the exploration_parameter and 
         the pheromone levels of the possible connections.
+
         Pre: ant is an ant, max_duration is an integer, exploration_parameter is a float.
         Post: The next station for the ant to visit is returned, if no station available or found it returns None.
         """
@@ -134,6 +139,7 @@ class ACO:
         """
         Updates the pheromones of the connections in the rail network. All pheromones are evaporated 
         and the pheromones of the connections of the best solution are updated.
+
         Pre: rail_network is a rail network, evaporation_rate is a float.
         Post: The pheromones of the connections in the rail network are updated.
         """	
@@ -161,6 +167,7 @@ class ACO:
     def total_score(self, rail_network) -> float:
         """
         Returns the total score of the rail network according to the provided score-function.
+
         Pre: rail_network is a rail network.
         Post: The total score of the rail network according to the provided score-function is returned.
         """	
@@ -187,6 +194,7 @@ class ACO:
         """
         Updates the set of unique connections in the rail network. 
         This is used to calculate the score of the rail network.
+
         Pre: connection is a tuple containing the names of two stations in the rail network.
         Post: The set of unique connections in the rail network is updated.
         """	
@@ -251,7 +259,7 @@ if __name__ == "__main__":
         list_scores.append(aco.total_score(rail_network))
         
           # to save data in a txt file to compare in a histogram
-        with open('../data/aco_scores.txt', 'w') as f:
+        with open('../data/scores/aco_scores.txt', 'w') as f:
                 for score in list_scores:
                     f.write(f"{score}\n")
 

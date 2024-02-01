@@ -7,6 +7,7 @@ The algorithm uses a greedy algorithm to get a base state.
 
 """
 import sys
+import time
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -22,6 +23,7 @@ import matplotlib.pyplot as plt
 from itertools import product
 from help_funtions import initialize_rail, greedy_decision  
 from greedy import greedy_algorithm
+import time
 
 max_aantal_trajecten: int = 20
 max_aantal_minuten: int = 180
@@ -33,16 +35,13 @@ def simulated_annealing(temperature: float, cooling_rate: float, iterations: int
     """
     Run simulated annealing algorithm.
 
-    Args:
-    - temperature (float): Initial temperature for simulated annealing
-    - cooling_rate (float): Cooling rate for simulated annealing
-    - iterations (int): Number of iterations for simulated annealing
-    - greedy_iterations (int): Number of iterations for the greedy algorithm within each iteration of simulated annealing
-    - min_aantal_trajecten (int): Minimum number of trajectories
-    - new_solution_iterations (int): Number of iterations to generate a new solution
-
-    Returns:
-    - RailNL: Best RailNL object obtained through simulated annealing
+    Pre: temperature (float): Initial temperature for simulated annealing
+         cooling_rate (float): Cooling rate for simulated annealing
+         iterations (int): Number of iterations for simulated annealing
+         greedy_iterations (int): Number of iterations for the greedy algorithm within each iteration of simulated annealing
+         min_aantal_trajecten (int): Minimum number of trajectories
+         new_solution_iterations (int): Number of iterations to generate a new solution
+    Post: RailNL: Best RailNL object obtained through simulated annealing
     """
     rail_at_max_score: RailNL = initialize_rail("Nationaal")
     current_rail: RailNL = initialize_rail("Nationaal")
@@ -93,13 +92,10 @@ def generate_new_solution(current_rail: RailNL, greedy_iterations: int, min_aant
     """
     Generate a new solution based on the current rail.
 
-    Args:
-    - current_rail (RailNL): Current RailNL object
-    - greedy_iterations (int): Number of iterations for the greedy algorithm
-    - min_aantal_trajecten (int): Minimum number of trajectories
-
-    Returns:
-    - RailNL: New RailNL object
+    Pre: current_rail (RailNL): Current RailNL object
+         greedy_iterations (int): Number of iterations for the greedy algorithm
+         min_aantal_trajecten (int): Minimum number of trajectories
+    Post: RailNL: New RailNL object
     """
     if len(current_rail.trajecten) <= 1:
         new_rail: RailNL = greedy_algorithm(greedy_iterations, min_aantal_trajecten)
@@ -154,13 +150,10 @@ def accept_solution(current_score: int, new_score: int, temperature: float) -> b
     """
     Accepts or rejects a new solution based on the Metropolis criterion.
 
-    Args:
-    - current_score (int): Current score
-    - new_score (int): New score
-    - temperature (float): Current temperature
-
-    Returns:
-    - bool: True if the new solution is accepted, False otherwise
+    Pre: current_score (int): Current score
+         new_score (int): New score
+         temperature (float): Current temperature
+    Post:bool: True if the new solution is accepted, False otherwise
     """
     if new_score > current_score:
         return True
@@ -170,25 +163,24 @@ def accept_solution(current_score: int, new_score: int, temperature: float) -> b
     
 def run_simulated_annealing(num_runs: int, temperature: float, cooling_rate: float, iterations: int, 
                             greedy_iterations: int = 1000, min_aantal_trajecten: int = 5, 
-                            new_solution_iterations: int = 1) -> RailNL:
+                            new_solution_iterations: int = 1, max_time: int = 0) -> RailNL:
     """
     Run simulated annealing multiple times and return the best rail.
 
-    Args:
-    - num_runs (int): Number of runs
-    - temperature (float): Initial temperature for simulated annealing
-    - cooling_rate (float): Cooling rate for simulated annealing
-    - iterations (int): Number of iterations for simulated annealing
-    - greedy_iterations (int): Number of iterations for the greedy algorithm within each iteration of simulated annealing
-    - min_aantal_trajecten (int): Minimum number of trajectories
-    - new_solution_iterations (int): Number of iterations to generate a new solution
-
-    Returns:
-    - RailNL: Best RailNL object obtained through simulated annealing
+    Pre: num_runs (int): Number of runs
+         temperature (float): Initial temperature for simulated annealing
+         cooling_rate (float): Cooling rate for simulated annealing
+         iterations (int): Number of iterations for simulated annealing
+         greedy_iterations (int): Number of iterations for the greedy algorithm within each iteration of simulated annealing
+         min_aantal_trajecten (int): Minimum number of trajectories
+         new_solution_iterations (int): Number of iterations to generate a new solution
+         max_time (int): Maximum time in seconds, if reached, exit the loop
+    Post: RailNL: Best RailNL object obtained through simulated annealing
     """
     best_rail: RailNL = None
     best_score: int = 0
     scores_list: list[int] = []
+    start_time = time.time()
 
     for run in range(1, num_runs + 1):
         print(f"Run {run}/{num_runs}, best score == {best_score}")
@@ -200,7 +192,7 @@ def run_simulated_annealing(num_runs: int, temperature: float, cooling_rate: flo
         current_score: int = rail_at_max_score.get_score()
         scores_list.append(current_score)
         # to save data in a txt file to compare in a histogram
-        with open('../data/simulated_annealing_scores.txt', 'w') as file:
+        with open('../data/scores/simulated_annealing_scores.txt', 'w') as file:
             for score in scores_list:
                 file.write(f"{score}\n")
 
@@ -213,6 +205,11 @@ def run_simulated_annealing(num_runs: int, temperature: float, cooling_rate: flo
             best_score = current_score
             best_rail = copy.deepcopy(rail_at_max_score)
 
+        # Check if maximum time is reached
+        if max_time > 0 and time.time() - start_time >= max_time:
+            print("Maximum time reached. Exiting the loop.")
+            break
+
     # Iteration and scores list for visualization
     iterations_process_list: list[int] = best_rail.iterations_list
     scores_process_list: list[int] = best_rail.scores_list
@@ -224,7 +221,7 @@ def run_simulated_annealing(num_runs: int, temperature: float, cooling_rate: flo
     plt.title("Simulated Annealing Progress")
     plt.legend()
     plt.axhline(y=best_score, color='red', linestyle='--', label=f'Max Score: {best_score}')
-    plt.savefig('Simulated_Annealing_process.png')
+    plt.savefig('pics/Simulated_Annealing_process.png')
     plt.close()
 
     # Calculate average score
@@ -242,22 +239,23 @@ def run_simulated_annealing(num_runs: int, temperature: float, cooling_rate: flo
         plt.ylabel('Frequency')
         plt.title(f"Simulated Annealing Progress\nInitial Temperature: {temperature}, Cooling Rate: {cooling_rate}, Iterations: {iterations}, num_runs: {num_runs}\n Average Score: {average_score}")
         plt.legend()
-        plt.savefig('Score_Distribution_Simulated_Annealing_Clustered.png')
+        plt.savefig('pics/Score_Distribution_Simulated_Annealing_Clustered.png')
 
     return best_rail
 
 
-num_runs = 5
-initial_temperature = 10000
+num_runs = 100000
+initial_temperature = 1000
 cooling_rate = 0.005
 iterations = 1500
 min_aantal_trajecten = 10
 greedy_iterations = 500
 new_solution_iterations = 1
+max_time = 1200
 
 
 # Run simulated annealing multiple times and get the best rail
-best_rail = run_simulated_annealing(num_runs, initial_temperature, cooling_rate, iterations, greedy_iterations, min_aantal_trajecten, new_solution_iterations = new_solution_iterations)
+best_rail = run_simulated_annealing(num_runs, initial_temperature, cooling_rate, iterations, greedy_iterations, min_aantal_trajecten, new_solution_iterations = new_solution_iterations, max_time = max_time)
 
 # Print and save the best rail
 if best_rail is not None:

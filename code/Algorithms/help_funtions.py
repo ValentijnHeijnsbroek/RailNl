@@ -12,12 +12,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Classes.railnl import RailNL
 import random
 
-def initialize_rail(Map = 'Nationaal'):
+def initialize_rail(Map: str = 'Nationaal'):
     """
     Initializes the rail based on which Map the user wants to use
 
-    pre: Map, Nationaal or Holland
-    post Rail initialized based on which map is used
+    Pre: Map, Nationaal or Holland
+    Post: Rail initialized based on which map is used
     """
     # The wwhole of the Netherlands
     if Map == 'Nationaal':
@@ -36,8 +36,14 @@ def initialize_rail(Map = 'Nationaal'):
         return rail_nl
 
 # Takes in a traject and returns the station with the highest delta score
-def greedy_decision(rail, traject_index, max_aantal_minuten=180):
-    base_score = rail.get_score()
+def greedy_decision(rail: RailNL, traject_index: int, max_aantal_minuten: int=180):
+    """
+    Takes in a traject and gives the station which gives the highest score
+
+    Pre: Rail, Traject index, and the maximum amount of minutes
+    Post: best station based on score given for the traject
+    """
+    base_score: float = rail.get_score()
     best_station = None
     latest_station = rail.trajecten[traject_index].traject_stations[-1]
     list_possible_stations = [station for station in latest_station.connections if not rail.trajecten[traject_index].is_visited(station)]

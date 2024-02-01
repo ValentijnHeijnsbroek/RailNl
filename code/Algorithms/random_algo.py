@@ -1,3 +1,15 @@
+"""
+Random Algorithm for Rail Network Optimization
+
+This script uses a random algorithm to optimize rail trajectories, adhering to constraints 
+on the number and duration of trajectories. It iteratively generates and evaluates rail network configurations, 
+randomly selecting stations to form each trajectory. 
+
+The goal is to explore the solution space and assess the potential of random configurations 
+for network optimization. Scores from each iteration are recorded to understand the variability 
+and effectiveness of this approach.
+"""
+
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -15,6 +27,7 @@ max_aantal_minuten: int = 180
 def random_algorithm(herhalingen: int):
     """
     Runs the random algorithm for the specified number of iterations.
+
     Pre: herhalingen is an integer.
     Post: the score of the random algorithm is returned.
     """
@@ -48,15 +61,8 @@ def random_algorithm(herhalingen: int):
                 else:
                     break
         current_score = baseline.get_score()
-        # If the score is higher than the max score, save the baseline        
-        # if baseline.get_score() > max_score:
-        #     max_score = baseline.get_score()
-        #     baseline_at_max_score = baseline
-        # if baseline.get_score() < min_score:
-        #     min_score = baseline.get_score()
-        #     baseline_at_min_score = baseline
         score_list.append(current_score)  
-        with open('../data/random_scores.txt', 'w') as f:
+        with open('../data/scores/random_scores.txt', 'w') as f:
                 for score in score_list:
                     f.write(f"{score}\n")
 
@@ -65,16 +71,9 @@ def random_algorithm(herhalingen: int):
             print(f"{herhalingen/totaal_herhalingen * 100}%")
 
     return baseline_at_max_score
-    # return baseline_at_max_score, baseline_at_min_score
 
-if __name__ == "__main__":
-    baseline = random_algorithm(100)
-    print(baseline.get_score())
-    # print(T)
-    # print(len(baseline.trajecten))
 
-    # random_test = random_algorithm(10000)
-    #  #print_output(random_test)
-    # print(random_test.get_score())
-    # random_test.print_output()
-    # random_test.upload_output('output.csv')
+
+# Example usage
+baseline = random_algorithm(100)
+print(baseline.get_score())

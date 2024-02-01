@@ -1,3 +1,15 @@
+"""
+Hill Climber Algorithm for Rail Network Optimization
+
+This script implements the hill climber algorithm to optimize a rail network configuration. 
+The optimization process involves dynamically modifying rail trajectories through the addition, deletion, 
+and substitution of stations within each trajectory to maximize the overall network score. 
+Utilizing a strategic combination of hill climbing techniques alongside a greedy algorithm for initial trajectory generation, 
+the script iteratively refines the network, seeking incremental improvements to approach an optimal configuration.
+"""
+
+
+
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -14,6 +26,13 @@ max_aantal_minuten = 180
 #Toevoegen dat traject begint bij een station met weinig verbindingen bijv
 
 def greedy_algorithm(herhalingen, min_aantal_trajecten = 5):
+    """
+    Takes the best score possible after adding a station, or traject
+    randomly picks the start station
+
+    Pre: herhalingen, min aantal trajecten
+    Post: Rail based on greedy
+    """
     totaal_herhalingen = herhalingen
     greedy_at_max_score = initialize_rail("Nationaal")
     greedy = initialize_rail("Nationaal")
@@ -39,7 +58,7 @@ def greedy_algorithm(herhalingen, min_aantal_trajecten = 5):
                     break
         current_score = greedy.get_score()
         score_list.append(current_score)  
-        with open('../data/greedy_scores.txt', 'w') as f:
+        with open('../data/scores/greedy_scores.txt', 'w') as f:
                 for score in score_list:
                     f.write(f"{score}\n")
 
