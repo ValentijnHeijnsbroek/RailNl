@@ -80,7 +80,7 @@ def run_aco_with_time_limit(num_iterations: int, evaporation_rate: float, explor
     list_scores: list = []
     best_scores_num_traject: dict = {}
     best_score_not_changed: int = 0
-    threshold: int = 10000
+    threshold: int = 1000000
     time_limit: int = 1200
     calculations_done: bool = False
     for i in range(1, 21):
