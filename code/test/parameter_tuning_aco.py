@@ -14,7 +14,7 @@ from Classes.railnl import RailNL
 import time
 from typing import List, Tuple
 
-def run_aco_and_write_to_csv(parameter_set: List[Tuple[int, float, float, int, int, int]], num_runs: int = 20) -> None:
+def run_aco_and_write_to_csv(parameter_set: List[Tuple[int, float, float, int, int, int]], num_runs: int = 1) -> None:
     """
     Runs the ACO algorithm with the given parameter set and writes the results to a CSV file.
     Pre: parameter_set is a list of tuples containing the parameter values to be tested.
@@ -79,7 +79,7 @@ def run_aco_with_time_limit(num_iterations: int, evaporation_rate: float, explor
     best_scores_num_traject: dict = {}
     best_score_not_changed: int = 0
     threshold: int = 10000
-    time_limit: int = 180
+    time_limit: int = 1200
     calculations_done: bool = False
     for i in range(1, 21):
         best_scores_num_traject[i] = 0
@@ -121,7 +121,7 @@ def run_aco_with_time_limit(num_iterations: int, evaporation_rate: float, explor
             best_score_not_changed = 0
         elif i > end_random_iterations:
             best_score_not_changed += 1
-        if best_score_not_changed > threshold or best_score - prev_best_score < 10:
+        if best_score_not_changed > threshold:
             print("Best score not changed for 10000 iterations")
             break
          
@@ -140,7 +140,7 @@ def run_aco_with_time_limit(num_iterations: int, evaporation_rate: float, explor
 if __name__ == '__main__':
     parameter_values = {
         'num_iterations': [50000],
-        'evaporation_rate': [0.001, 0.005, 0.01],
+        'evaporation_rate': [0.005],
         'exploration_parameter': [0.5],
         'min_trajecten': [3],
         'max_trajecten': [18],

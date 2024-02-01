@@ -195,15 +195,15 @@ class ACO:
 
 # Initialize parameters
 
-num_iterations: int = 50000
+num_iterations: int = 500000
 evaporation_rate: float = 0.001
 max_duration: int = 180
 exploration_parameter: float = 0.5
 min_trajecten: int = 3
 max_trajecten: int = 18
-end_random_iterations: int = 1000
+end_random_iterations: int = 10000
 calculations_done: bool = False
-threshold: int = 7000
+threshold: int = 700000
 network_size_stations = 'StationsNationaal.csv'
 network_size_connections = 'ConnectiesNationaal.csv'
 # main loop
@@ -273,7 +273,7 @@ if __name__ == "__main__":
         elif i > end_random_iterations:
             best_score_not_changed += 1
         if best_score_not_changed > threshold or best_score - prev_best_score < 10:
-            print(f"Best score not changed for {threshold} iterations")
+            print(f"Best score not changed for {threshold} iterations {best_score_not_changed}")
             break
          
         if score_totaal > best_scores_num_traject[len(aco.totaal_trajecten)]:
